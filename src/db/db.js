@@ -3,14 +3,14 @@ import pkg from 'pg';
 
 
 import { env } from '../utils/env.js';
-
+import dotenv from 'dotenv';
 
 
 
 
 const { Client } = pkg;
 
-
+dotenv.config();
 
  const client = new Client({
   user: env("DB_USER"),
