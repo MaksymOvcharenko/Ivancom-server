@@ -4,11 +4,14 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 import { env } from './utils/env.js';
+import dotenv from 'dotenv';
+import router from './routes/routes.js';
+
 
 const PORT = Number(env('PORT', '3000'));
 export const setupServer = () => {
   const app = express();
-
+  dotenv.config();
   app.use(express.json());
   app.use(cors());
 
@@ -26,7 +29,7 @@ export const setupServer = () => {
     });
   });
 
-
+  app.use(router);
 
 
   app.use('*', (req, res, next) => {
