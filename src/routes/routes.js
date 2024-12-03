@@ -1,9 +1,14 @@
 import express from 'express';
-import { createUser } from '../controllers/user.js';
+import parcelRoutes from './parcels.js';
+import userRoutes from './users.js';
 
 const router = express.Router();
 
-// Роут для создания нового пользователя
-router.post('/users', createUser);
+// Підключення кожного роута
+router.use('/parcels', parcelRoutes);
+router.use('/users', userRoutes);
+
+// Інші групи роутів можна додати тут
+// router.use('/example', exampleRoutes);
 
 export default router;

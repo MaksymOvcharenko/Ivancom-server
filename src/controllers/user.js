@@ -1,27 +1,30 @@
-// userController.js
- // Подключение к базе данных
-
-import client from "../db/db.js";
 
 
-
-
-
+import User from "../db/models/users.js";
 export const createUser = async (req, res) => {
-  const { name, email } = req.body; // Данные, которые приходят от клиента
-
   try {
-    // Запрос для добавления пользователя в таблицу users
-    const result = await client.query(
-      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-      [name, email]
-    );
+    const { last_name, first_name, middle_name, phone, email, ref_code_np } = req.body;
 
-    // Отправляем обратно созданного пользователя
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    console.error('Error creating user:', err.message);
-    res.status(500).json({ error: 'Ошибка при создании пользователя' });
+    // Створюємо нового користувача
+    const newUser = await User.create({
+      last_name,
+      first_name,
+      middle_name,
+      phone,
+      email,
+      ref_code_np,
+    });
+
+    return res.status(201).json({
+      message: 'User created successfully',
+      user: newUser,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: 'Error creating user',
+      error: error.message,
+    });
   }
 };
 
