@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../db.js';
+// import Shipment from './shipments.js';
 
 const Parcel = sequelize.define('Parcel', {
   id: {
@@ -66,5 +67,6 @@ const Parcel = sequelize.define('Parcel', {
   tableName: 'parcels', // Назва таблиці
   timestamps: false,    // Відключення автоматичних полів `createdAt` і `updatedAt`
 });
+// Parcel.hasOne(Shipment, { foreignKey: 'parcel_id' });
 
 export default Parcel;

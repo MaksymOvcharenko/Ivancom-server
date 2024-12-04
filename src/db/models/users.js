@@ -1,5 +1,6 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import sequelize from '../db.js';
+// import Shipment from './shipments.js';
   // Підключення до бази даних
 
   const User = sequelize.define('user', {
@@ -47,5 +48,8 @@ import sequelize from '../db.js';
   //   tableName: 'users'  // явно вказуємо ім'я таблиці
   // }
 );
+// User.hasMany(Shipment, { as: 'sentShipments', foreignKey: 'sender_id' });
+// User.hasMany(Shipment, { as: 'receivedShipments', foreignKey: 'recipient_id' });
+
 
   export default User;
