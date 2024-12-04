@@ -1,4 +1,6 @@
 import sequelize from "../db/db.js";
+import Parcel from "../db/models/parcels.js";
+import Shipment from "../db/models/shipments.js";
 import User from "../db/models/users.js";
 import { createContactPersonRef } from "../services/np.js";
 
@@ -15,8 +17,8 @@ export const createShipment = async (req, res) => {
       sender_id: null,
       recipient_id: null,
       parcel_id: null,
-      sender_address_id: null,
-      recipient_address_id: null,
+      sender_address_id: 2,
+      recipient_address_id: 2,
       payment_id: null, // Може залишатися null, якщо оплата не потрібна
     };
 
@@ -95,17 +97,38 @@ export const createShipment = async (req, res) => {
 
       // === КРОК 4: TODO - Обробка посилки (Parcel) ===
       // Логіка для перевірки/створення посилки.
+      const newParcel = await Parcel.create(
+        {
+          user_id: senderId, // Прив'язуємо посилку до ID відправника
+          crate_name: parcel.crate_name,
+          length: parcel.length,
+          width: parcel.width,
+          height: parcel.height,
+          weight_actual: parcel.weight_actual,
+          weight_dimensional: parcel.weight_dimensional,
+          estimated_value: parcel.estimated_value,
+          price: parcel.price,
+          description: parcel.description,
+        },
+        { transaction: t }
+      );
+
+      // Додаємо ID посилки до shipmentData
+      shipmentData.parcel_id = newParcel.id;
 
       // === КРОК 5: TODO - Обробка платежу (Payment) ===
       // Логіка для перевірки/створення платежу.
+     // === КРОК 6: TODO - Створення Посилки (Shipment) ===
+     const newShipment = await Shipment.create(shipmentData,{ transaction: t });
 
-      console.log("Shipment data so far:", shipmentData);
+     console.log("Shipment data so far:", shipmentData);
 
       await t.commit(); // Підтверджуємо транзакцію
       res.status(201).json({
         success: true,
         message: "Shipment created successfully",
-        data: shipmentData,
+        data: {...shipmentData, shipmentId:newShipment.id},
+        id: newShipment.id,
       });
     } catch (error) {
       await t.rollback(); // Відкат транзакції у разі помилки
