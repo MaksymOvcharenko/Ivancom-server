@@ -82,16 +82,15 @@ export const getShipmentById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Запрос с включением связанных моделей
     const shipment = await Shipment.findByPk(id, {
       include: [
-        { model: User, as: 'sender', attributes: ['id', 'name', 'email'] }, // Информация о отправителе
-        { model: User, as: 'recipient', attributes: ['id', 'name', 'email'] }, // Информация о получателе
-        { model: Address, as: 'senderAddress', attributes: { exclude: ['createdAt', 'updatedAt'] } }, // Адрес отправителя
-        { model: Address, as: 'recipientAddress', attributes: { exclude: ['createdAt', 'updatedAt'] } }, // Адрес получателя
-        { model: Parcel, attributes: { exclude: ['createdAt', 'updatedAt'] } }, // Информация о посылке
-        { model: Payment, attributes: ['id', 'amount', 'confirmation', 'redirect_code'] } // Информация о платеже
-      ]
+        { model: User, as: 'sender', attributes: { exclude: ['password'] } },
+        { model: User, as: 'recipient', attributes: { exclude: ['password'] } },
+        { model: Address, as: 'senderAddress' },
+        { model: Address, as: 'recipientAddress' },
+        { model: Parcel },
+        { model: Payment },
+      ],
     });
 
     if (!shipment) {
@@ -101,12 +100,28 @@ export const getShipmentById = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    // Формуємо відповідь
+    const response = {
+      shipment: {
+        id: shipment.id,
+        created_at: shipment.createdAt,
+        updated_at: shipment.updatedAt,
+      },
+      sender: shipment.sender,
+      recipient: shipment.recipient,
+      senderAddress: shipment.senderAddress,
+      recipientAddress: shipment.recipientAddress,
+      parcel: shipment.Parcel,
+      payment: shipment.Payment,
+    };
+
+    return res.status(200).json({
       success: true,
-      data: shipment,
+      data: response,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error(error);
+    return res.status(500).json({
       success: false,
       message: 'Помилка отримання відправлення',
       error: error.message,

@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../db.js';
-// import User from './users.js';
-// import Address from './address.js';
-// import Parcel from './parcels.js';
-// import Payment from './payments.js';
+import User from './users.js';
+import Address from './address.js';
+import Parcel from './parcels.js';
+import Payment from './payments.js';
 
 
 const Shipment = sequelize.define('Shipment', {
@@ -72,11 +72,12 @@ const Shipment = sequelize.define('Shipment', {
   tableName: 'shipment',
   timestamps: false,
 });
-// Shipment.belongsTo(User, { as: 'sender', foreignKey: 'sender_id' });
-// Shipment.belongsTo(User, { as: 'recipient', foreignKey: 'recipient_id' });
-// Shipment.belongsTo(Address, { as: 'senderAddress', foreignKey: 'sender_address_id' });
-// Shipment.belongsTo(Address, { as: 'recipientAddress', foreignKey: 'recipient_address_id' });
-// Shipment.belongsTo(Parcel, { foreignKey: 'parcel_id' });
-// Shipment.belongsTo(Payment, { foreignKey: 'payment_id' });
+// models/Shipment.js
+Shipment.belongsTo(User, { as: 'sender', foreignKey: 'sender_id' });
+Shipment.belongsTo(User, { as: 'recipient', foreignKey: 'recipient_id' });
+Shipment.belongsTo(Address, { as: 'senderAddress', foreignKey: 'sender_address_id' });
+Shipment.belongsTo(Address, { as: 'recipientAddress', foreignKey: 'recipient_address_id' });
+Shipment.belongsTo(Parcel, { foreignKey: 'parcel_id' });
+Shipment.belongsTo(Payment, { foreignKey: 'payment_id' });
 
 export default Shipment;
