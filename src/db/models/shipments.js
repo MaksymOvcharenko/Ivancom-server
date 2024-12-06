@@ -59,6 +59,9 @@ const Shipment = sequelize.define('Shipment', {
       model: 'payments', // Назва таблиці платежів
       key: 'id',
     },
+    np_tracking_number: {
+      type: DataTypes.STRING(50),
+    },
   },
   created_at: {
     type: DataTypes.DATE,

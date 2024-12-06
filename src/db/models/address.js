@@ -44,7 +44,7 @@ const Address = sequelize.define('Address', {
   },
   street: {
     type: DataTypes.STRING(255),
-    allowNull: false,
+
   },
   building_number: {
     type: DataTypes.STRING(50),
@@ -58,6 +58,9 @@ const Address = sequelize.define('Address', {
   postal_code: {
     type: DataTypes.STRING(20),
   },
+  np_branch: {
+    type: DataTypes.STRING(200),
+  },
   np_branch_ref: {
     type: DataTypes.STRING(50),
   },
@@ -69,7 +72,7 @@ const Address = sequelize.define('Address', {
   },
   delivery_method: {
     type: DataTypes.STRING(50),
-    allowNull: false,
+
     validate: {
       isIn: [['department', 'address']], // Допустимі типи доставки
     },
