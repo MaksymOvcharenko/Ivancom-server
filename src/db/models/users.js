@@ -33,6 +33,10 @@ import sequelize from '../db.js';
       type: DataTypes.STRING(50),
       allowNull: true,
     },
+    ref_code_np_contactPerson: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.NOW,
