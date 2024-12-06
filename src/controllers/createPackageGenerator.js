@@ -5,6 +5,7 @@ import Shipment from "../db/models/shipments.js";
 import User from "../db/models/users.js";
 import { convertToUAH } from "../services/convertPlnToUah.js";
 import { gabarytes } from "../services/gabarytes.js";
+import { sendInpostRequest } from "../services/inpost.js";
 import { createContactPersonRef, CreateInternetDocumentWarehouse } from "../services/np.js";
 
 
@@ -23,7 +24,8 @@ export const createShipment = async (req, res) => {
       sender_address_id: 2,
       recipient_address_id: 2,
       payment_id: null,
-      np_tracking_number: null, // Може залишатися null, якщо оплата не потрібна
+      np_tracking_number: null,
+      inpost_code: null, // Може залишатися null, якщо оплата не потрібна
     };
     let refNpUser = null;
     let refNpUserContact = null;
@@ -271,16 +273,71 @@ console.log(npTruckNumber);
 return npTruckNumber;
 };
 let npTruckNumber =  await sendNp();
+console.log(npTruckNumber + "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+
 shipmentData.np_tracking_number=npTruckNumber;
+
 
       // === КРОК 5: TODO - Обробка платежу (Payment) ===
       // Логіка для перевірки/створення платежу.
      // === КРОК 6: TODO - Створення Посилки (Shipment) ===
      const newShipment = await Shipment.create(shipmentData,{ transaction: t });
+    //  const sendInpost = async ()=> {
+    //     const numberShipment = newShipment.id;
+    //     const crateType = parcel.crate_name;
+    //     // last_name: sender.last_name,
+    //     // first_name: sender.first_name,
+    //     // middle_name: recipient.middle_name || ".",
+    //     // phone: sender.phone,
+    //     // email: sender.email,
+    //     const senderPhone = sender.phone;
+    //     const senderEmail = sender.email;
+    //     let inpost_code = await sendInpostRequest(numberShipment,crateType,senderPhone,senderEmail);
+    // };
+    // let inpost_code = await sendInpost();
+    // shipmentData.inpost_code= inpost_code;
+    // //  console.log("Shipment data so far:", shipmentData);
 
-    //  console.log("Shipment data so far:", shipmentData);
+    //   await t.commit(); // Підтверджуємо транзакцію
+    const sendInpost = async () => {
+        const numberShipment = newShipment.id;
+        const crateType = parcel.crate_name;
+        const senderPhone = sender.phone;
+        const senderEmail = sender.email;
 
-      await t.commit(); // Підтверджуємо транзакцію
+        // Викликаємо функцію для запиту в InPost
+        const inpost_code = await sendInpostRequest(
+          numberShipment,
+          crateType,
+          senderPhone,
+          senderEmail
+        );
+        console.log(inpost_code+"iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+
+        return inpost_code;
+      };
+
+      const inpost_code = await sendInpost();
+
+      // Оновлення Shipment з кодом InPost
+      console.log("Оновлення Shipment з inpost_code:", inpost_code);
+
+      await Shipment.update(
+        { inpost_code },
+        { where: { id: newShipment.id }, transaction: t }
+      );
+
+      // Перевіряємо, чи оновлення пройшло
+      const updatedShipment = await Shipment.findOne({
+        where: { id: newShipment.id },
+      });
+      console.log("Оновлений Shipment:", updatedShipment);
+
+      shipmentData.inpost_code = inpost_code; // Додаємо код до об'єкта, який повертається у відповідь
+
+      // Підтверджуємо транзакцію
+      await t.commit();
+
       res.status(201).json({
         success: true,
         message: "Shipment created successfully",

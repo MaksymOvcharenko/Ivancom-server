@@ -1,0 +1,92 @@
+import { parseStringPromise } from "xml2js";
+
+export async function sendInpostRequest(numberShipment,crateType,senderPhone,senderEmail) {
+  const url = "https://sandbox-api.paczkomaty.pl/?do=revloggenerateactivecode";
+  function generateFutureDate(daysAhead = 14) {
+    // Отримуємо поточну дату
+    const currentDate = new Date();
+
+    // Додаємо до поточної дати 14 днів
+    currentDate.setDate(currentDate.getDate() + daysAhead);
+
+    // Форматуємо дату у потрібний формат
+    const formattedDate = currentDate.toISOString().split('T');
+    const date = formattedDate[0]; // Дата у форматі YYYY-MM-DD
+    const time = formattedDate[1].substring(0, 8); // Час у форматі HH:mm:ss
+
+    // Формуємо результат у форматі "YYYY-MM-DDTHH:mm:ss"
+    return `${date}T${time}`;
+  }
+
+  // Викликаємо функцію для генерування дати на 14 днів наперед
+  const futureDate = generateFutureDate(14);
+
+
+  // XML-контент, який потрібно відправити
+  const xmlContent = `
+    <paczkomaty>
+      <rma>${numberShipment}</rma>
+      <packType>${crateType}</packType>
+      <expirationDate>${futureDate}</expirationDate>
+      <senderPhone>${senderPhone}</senderPhone>
+      <senderEmail>${senderEmail}</senderEmail>
+      <returnDescription1>Zamówienie:${numberShipment}</returnDescription1>
+      <address>
+        <name>Ivan</name>
+        <surName>Kysil</surName>
+        <email>ivancominpost@gmail.com</email>
+        <street>Dobrego Pasterza</street>
+        <buldingNo>1</buldingNo>
+        <flatNo>4</flatNo>
+        <zipCode>31-416</zipCode>
+        <town>Krakow</town>
+      </address>
+    </paczkomaty>
+  `;
+
+  // Формат даних, які відправляються
+  const formData = new URLSearchParams();
+  formData.append("email", "ivancominpost@gmail.com");
+  formData.append("password", "Ivancomparcels@2024");
+  formData.append("content", xmlContent);
+
+  try {
+    // Відправляємо POST запит
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded", // Формат для передачі даних
+      },
+      body: formData.toString(),
+    });
+
+    // Обробляємо відповідь
+    if (response.ok) {
+      const result = await response.text(); // Якщо відповідь у вигляді тексту
+
+
+
+      // Якщо відповідь у форматі XML, то парсимо її
+      try {
+        const parsedXml = await parseStringPromise(result);
+
+
+        // Приклад отримання значення коду з XML:
+        const code = parsedXml?.paczkomaty?.return?.[0]?.code?.[0];
+
+        console.log("Отриманий код:", code);
+        return code;
+      } catch (parseError) {
+        console.error("Помилка парсингу XML:", parseError.message);
+      }
+
+    } else {
+      console.error("Помилка:", response.status, response.statusText);
+    }
+  } catch (error) {
+    console.error("Помилка при відправці запиту:", error);
+  }
+}
+
+// Викликаємо функцію
+sendInpostRequest();
