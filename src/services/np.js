@@ -59,7 +59,7 @@ export const createContactPersonRef = async (firstName,lastName,phone,email) => 
 // createContactPersonRef();
 
 
-export const CreateInternetDocumentWarehouse = async (descriptionNp, valuationNp, cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone) => {
+export const CreateInternetDocumentWarehouse = async (descriptionNp, valuationNp,weightActuality, cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone) => {
     const currentDate = new Date();
 const formattedDate = currentDate.toLocaleDateString("uk-UA", {
   day: "2-digit",
@@ -71,8 +71,8 @@ const formattedDate = currentDate.toLocaleDateString("uk-UA", {
      PaymentMethod : "NonCash",
      DateTime : formattedDate,
      CargoType : "Cargo",
-     VolumeGeneral : "0.01", // Обьемна вага
-     Weight : "0.5",
+    //  VolumeGeneral : "0.01", // Обьемна вага
+     Weight : weightActuality,
      ServiceType : "WarehouseWarehouse",
      SeatsAmount : "1",
      Description : descriptionNp,

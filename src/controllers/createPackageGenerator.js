@@ -4,6 +4,7 @@ import Parcel from "../db/models/parcels.js";
 import Shipment from "../db/models/shipments.js";
 import User from "../db/models/users.js";
 import { convertToUAH } from "../services/convertPlnToUah.js";
+import { gabarytes } from "../services/gabarytes.js";
 import { createContactPersonRef, CreateInternetDocumentWarehouse } from "../services/np.js";
 
 
@@ -26,8 +27,34 @@ export const createShipment = async (req, res) => {
     };
     let refNpUser = null;
     let refNpUserContact = null;
+    let weightActuality = null;
+
+
+
+
     try {
       const { sender, recipient, senderAddress, recipientAddress, parcel, payment } = req.body;
+      let length, width, height, weightActual, weightDimensional;
+
+// Габарити та вага для кожного типу скриньки (зберігаються на бекенді)
+const crateDimensions = gabarytes;
+
+// Дані, що приходять з фронтенду
+
+
+// Перевірка та присвоєння даних
+if (crateDimensions[parcel.crate_name]) {
+  const crate = crateDimensions[parcel.crate_name];
+  length = crate.length;
+  width = crate.width;
+  height = crate.height;
+  weightActual = crate.weightActual;
+  weightActuality = weightActual;
+  // Розрахунок об'ємної ваги
+  weightDimensional = (length * width * height) / 4000; // Стандартний коефіцієнт для переводу в кг
+} else {
+  throw new Error(`Невідомий тип скриньки: ${parcel.crate_name}`);
+}
 
       // === КРОК 1: Обробка відправника (Sender) ===
       let senderId;
@@ -238,7 +265,7 @@ const recipientNpRef = refNpUser;
 const recipientContactNpRef = refNpUserContact;
 const recipientNpWarehouseRef = recipientAddress.np_branch_ref;
 const recipientNpPhone = recipient.phone;
-let npTruckNumber = await CreateInternetDocumentWarehouse(descriptionNp,valuationNp,cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone );
+let npTruckNumber = await CreateInternetDocumentWarehouse(descriptionNp,valuationNp,weightActuality,cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone );
 console.log(npTruckNumber);
 
 return npTruckNumber;
