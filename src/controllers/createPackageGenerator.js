@@ -5,6 +5,7 @@ import Shipment from "../db/models/shipments.js";
 import User from "../db/models/users.js";
 import { convertToUAH } from "../services/convertPlnToUah.js";
 import { gabarytes } from "../services/gabarytes.js";
+import { writeData } from "../services/google/main.js";
 import { sendInpostRequest } from "../services/inpost.js";
 import { createContactPersonRef, CreateInternetDocumentAddress, CreateInternetDocumentWarehouse } from "../services/np.js";
 
@@ -416,7 +417,7 @@ console.log(shipmentData+"data with update branch");}
 
       // Підтверджуємо транзакцію
       await t.commit();
-
+      await writeData(newShipment.id);
       res.status(201).json({
         success: true,
         message: "Shipment created successfully",

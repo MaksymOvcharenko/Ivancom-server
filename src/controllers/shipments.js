@@ -104,6 +104,8 @@ export const getShipmentById = async (req, res) => {
     const response = {
       shipment: {
         id: shipment.id,
+        inpost_code:shipment.inpost_code,
+          np_tracking_number: shipment.np_tracking_number,
         created_at: shipment.createdAt,
         updated_at: shipment.updatedAt,
       },
