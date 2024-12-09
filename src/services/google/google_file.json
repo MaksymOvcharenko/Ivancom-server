@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "ivancom-inpost",
+  "private_key_id": "eccf7b1e79338201431d9cf4b10f2a9a96865d7f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQD0OwZumX0L0/5y\nDrz3DAxCjpK1eo6wmn7J83I31DuRiNdf1MZrrqVXoPcZCl0RB4WgWs942VmxNd2f\n7G9ZNHWqPLy1yAdmQTeiJLBlS8dwVVXKCGDn94NIVJV2pEtpV2kBk4qX17ZYvo05\naMIzpOVunOpqlRSy4GBPP8IxdZ5kDkyIEDFW69vTpodEm6uNej/EIqnvft29KNXx\n2P//ctjPh6p6Meb6Oa9G/mJrbNqk82PBOSeReEb0yBmsGsPsK2hV5YSPnd9qj+wp\nkcWsShaelW7AcHftfbP2ORGmnRDcEQQMxXzxd2mPb1DAeCKXID5eFwAK/qIHop0N\nF5x6YLOfAgMBAAECggEAChBBA5hTDPYp8lPeeQFO+Of/7j35PBhagRfMQmCo07SV\nHRhwRma73rsoj9Mi1F1AUMQX0x2hoPEHRFwmJRbX17FB45gYp7w2cGuA0h19P6V9\naMzdzc2RjtXfLzRSUdTi5B28r1bSWSBytNPFHpD83BdJX7PPj2vIU0LA2+/6/7Ym\nEkFMRrJ5JnGcD+GbjXU2IZDW3q22Oc4my7eFo24qQnE0BYJ402W6fRp5zcP7/uxm\nxv5qMdWPXPEp3TLQ+GfyhXHE/EDDrMNGLxsUlHo3rJ7S0jQ16k1EEQdXnF7Zch5L\nAebUV3e75ssPn7Dsec6dc2B6Dt5v2pW0BH7/VxwwAQKBgQD7SYJNiWzDSJgp9JsK\nalrwEAZJ/W57/+XbRxEnM2nQMukB+7YX8xl/A6OckoXgmB3xaxePUOEVnLflhJyl\nr6rex5IGg5j0wvkza0Ol6rI9jMeu4YqVIZGWfK/pjW0M4ij3Lwia2uIIt+nWmD50\ngZpuvD55UplJmliWKKkRaX/5HwKBgQD4z6LCLlozrJXLj0EavMBBlBplNzu8M9SI\npYwO3mG7Xdm0qodtOn8al1GF3dSxTkVRJp5dPhX72chwI2zu04EEqbommQp8KeEa\nGQYmCKi6l1bRoz7GdKiFHXJtr+q0ABUm+Fw6ZE/K0c4uJCDuoC8r96gQTevJVKmM\nafXZBdd1gQKBgCiW9R9FJXZd0YZlZm3GRC4myH1HHIOXEC/dSN4GJf9lWdHiMMWp\nlOK5WcI+wLVInP2UCNgzfkgZanL+ercgqv8VSXcX5qsSm2I83057nJLonJCZCeOQ\n6o1eUqPtHkJIfcl/pWouFPjHjFQHf38eOC3O5mB+gRgsgEaxBq4zVmKNAoGBAKmj\nj7nLNq7iraMDQgVDyeUsYC7AUNcJk4+zJ2H/1yyTWVqnpfwgFQcBQpD95QUac4JX\nzUOPkBeNre5fCOdwhxexzPyB/bcYKqTLiPinkLrfck8ueR9/7GIN6LXGakRdhg5y\n6Rbay9hh4axt75Ii3uagTRMIvYkgUxUsLXXRWMyBAoGBALGoYW+exmTz/Y1QxtEL\nMxw01kod20bcDf/ec7MS3mhNWaLkZwLbZQMR3bFQdX0VTfMDnlgKORZdlCRhTcOD\nUiLR2hHAM2X/FYrFt7aGUbV1eBwyZbi5nb9sDn92tG350WAL15I8br7PM6LuH7wF\nXocT0q/QoPZZvv0Owp/iAt1V\n-----END PRIVATE KEY-----\n",
+  "client_email": "ivancom-inpost@ivancom-inpost.iam.gserviceaccount.com",
+  "client_id": "114709892745595538895",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ivancom-inpost%40ivancom-inpost.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
