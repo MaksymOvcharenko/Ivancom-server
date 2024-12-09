@@ -179,6 +179,8 @@ export const writeData = async (id) => {
           return parcel.price;
           case 'allSumm':
           return parcel.price;
+          case 'packageId':
+          return dataShipment.shipment.id;
           case 'inpostCode':
           return dataShipment.shipment.inpost_code;
           case 'ttnNp':
