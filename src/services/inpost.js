@@ -1,7 +1,9 @@
 import { parseStringPromise } from "xml2js";
+import dotenv from 'dotenv';
+dotenv.config();
 
 export async function sendInpostRequest(numberShipment,crateType,senderPhone,senderEmail) {
-  const url = "https://sandbox-api.paczkomaty.pl/?do=revloggenerateactivecode";
+  const url = process.env.INPOST_URL;
   function generateFutureDate(daysAhead = 14) {
     // Отримуємо поточну дату
     const currentDate = new Date();
@@ -46,8 +48,8 @@ export async function sendInpostRequest(numberShipment,crateType,senderPhone,sen
 
   // Формат даних, які відправляються
   const formData = new URLSearchParams();
-  formData.append("email", "ivancominpost@gmail.com");
-  formData.append("password", "Ivancomparcels@2024");
+  formData.append("email", process.env.INPOST_LOGIN);
+  formData.append("password", process.env.INPOST_PASSWORD);
   formData.append("content", xmlContent);
 
   try {
@@ -59,6 +61,7 @@ export async function sendInpostRequest(numberShipment,crateType,senderPhone,sen
       },
       body: formData.toString(),
     });
+   console.log(response+"Inpost response");
 
     // Обробляємо відповідь
     if (response.ok) {

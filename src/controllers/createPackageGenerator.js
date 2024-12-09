@@ -6,7 +6,7 @@ import User from "../db/models/users.js";
 import { convertToUAH } from "../services/convertPlnToUah.js";
 import { gabarytes } from "../services/gabarytes.js";
 import { sendInpostRequest } from "../services/inpost.js";
-import { createContactPersonRef, CreateInternetDocumentWarehouse } from "../services/np.js";
+import { createContactPersonRef, CreateInternetDocumentAddress, CreateInternetDocumentWarehouse } from "../services/np.js";
 
 
 
@@ -213,19 +213,7 @@ if (existingRecipientAddress) {
   recipientAddressId = existingRecipientAddress.id;
 } else {
   // Додаткова перевірка для 'department' delivery_method
-  if (recipientAddress.delivery_method === 'address') {
 
-    const npBranchRef = await getNovaPoshtaBranchRef({
-      city: recipientAddress.city,
-      branch: recipientAddress.np_branch,
-    });
-
-    if (!npBranchRef) {
-      throw new Error('Failed to fetch Nova Poshta branch reference');
-    }
-
-    recipientAddress.np_branch_ref = npBranchRef;
-  }
 
   // Створення адреси отримувача
   const newRecipientAddress = await Address.create(
@@ -259,23 +247,106 @@ shipmentData.recipient_address_id = recipientAddressId;
 // Додаємо ID адреси відправника до shipmentData
 shipmentData.sender_address_id = senderAddressId;
 // Створюємо НП ТТН
-const sendNp = async ()=>{
-    const descriptionNp = parcel.description.contents;
-const valuationNp = convertToUAH(parcel.estimated_value);
-const cityNpRef = recipientAddress.np_city_ref;
-const recipientNpRef = refNpUser;
-const recipientContactNpRef = refNpUserContact;
-const recipientNpWarehouseRef = recipientAddress.np_branch_ref;
-const recipientNpPhone = recipient.phone;
-let npTruckNumber = await CreateInternetDocumentWarehouse(descriptionNp,valuationNp,weightActuality,cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone );
-console.log(npTruckNumber);
+// const sendNp = async ()=>{
+//     const descriptionNp = parcel.description.contents;
+// const valuationNp = convertToUAH(parcel.estimated_value);
+// const cityNpRef = recipientAddress.np_city_ref;
+// const recipientNpRef = refNpUser;
+// const recipientContactNpRef = refNpUserContact;
+// const recipientNpWarehouseRef = recipientAddress.np_branch_ref;
+// const recipientNpPhone = recipient.phone;
+// let npTruckNumber = await CreateInternetDocumentWarehouse(descriptionNp,valuationNp,weightActuality,cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone );
+// console.log(npTruckNumber);
 
-return npTruckNumber;
-};
-let npTruckNumber =  await sendNp();
-console.log(npTruckNumber + "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+// return npTruckNumber;
+// };
+if (recipientAddress.delivery_method === 'address') {
 
+    const sendNpAddress = async () => {
+        console.log("zbssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+
+        try {
+          const descriptionNp = parcel.description.contents;
+          const valuationNp = convertToUAH(parcel.estimated_value);
+          const cityNpRef = recipientAddress.np_city_ref;
+          const recipientNpRef = refNpUser;
+          const recipientContactNpRef = refNpUserContact;
+
+          const recipientNpStreet = recipientAddress.street;
+          const recipientNpBuildingNumber = recipientAddress.building_number;
+          const recipientNpFlat= recipientAddress.apartment_number;
+          const recipientNpPhone = recipient.phone;
+
+          const npTruckNumber = await CreateInternetDocumentAddress(
+            descriptionNp,
+            valuationNp,
+            weightActuality,
+            cityNpRef,
+            recipientNpRef,
+            recipientContactNpRef,
+            recipientNpPhone,
+            recipientNpStreet,
+            recipientNpBuildingNumber,
+            recipientNpFlat,
+          );
+
+          console.log("Nova Poshta Truck Number: sssssssssssssssssssssssssssssssssssssssssssssssssssssssss", npTruckNumber);
+          return npTruckNumber;
+        } catch (error) {
+          console.error("Error while creating Nova Poshta document:", error.message);
+          return null; // або пробросьте помилку далі, якщо це критично
+        }
+      };
+
+    let npTruckNumber = await sendNpAddress();
+    if (!npTruckNumber) {
+        console.error("Nova Poshta tracking number not generated!");
+        // За необхідності виконайте іншу логіку
+      }
+      console.log(shipmentData+"data with address");
 shipmentData.np_tracking_number=npTruckNumber;
+console.log(shipmentData+"data with  update address");
+
+  }
+if (recipientAddress.delivery_method === 'department'){
+    const sendNp = async () => {
+    try {
+      const descriptionNp = parcel.description.contents;
+      const valuationNp = convertToUAH(parcel.estimated_value);
+      const cityNpRef = recipientAddress.np_city_ref;
+      const recipientNpRef = refNpUser;
+      const recipientContactNpRef = refNpUserContact;
+      const recipientNpWarehouseRef = recipientAddress.np_branch_ref;
+      const recipientNpPhone = recipient.phone;
+
+      const npTruckNumber = await CreateInternetDocumentWarehouse(
+        descriptionNp,
+        valuationNp,
+        weightActuality,
+        cityNpRef,
+        recipientNpRef,
+        recipientContactNpRef,
+        recipientNpWarehouseRef,
+        recipientNpPhone
+      );
+
+      console.log("Nova Poshta Truck Number:", npTruckNumber);
+      return npTruckNumber;
+    } catch (error) {
+      console.error("Error while creating Nova Poshta document:", error.message);
+      return null; // або пробросьте помилку далі, якщо це критично
+    }
+  };
+  let npTruckNumber = await sendNp();
+  if (!npTruckNumber) {
+    console.error("Nova Poshta tracking number not generated!");
+    // За необхідності виконайте іншу логіку
+  }
+  console.log(shipmentData+"data with branch");
+shipmentData.np_tracking_number=npTruckNumber;
+console.log(shipmentData+"data with update branch");}
+
+
 
 
       // === КРОК 5: TODO - Обробка платежу (Payment) ===
@@ -300,25 +371,33 @@ shipmentData.np_tracking_number=npTruckNumber;
 
     //   await t.commit(); // Підтверджуємо транзакцію
     const sendInpost = async () => {
-        const numberShipment = newShipment.id;
-        const crateType = parcel.crate_name;
-        const senderPhone = sender.phone;
-        const senderEmail = sender.email;
+        try {
+          const numberShipment = newShipment.id;
+          const crateType = parcel.crate_name;
+          const senderPhone = sender.phone;
+          const senderEmail = sender.email;
 
-        // Викликаємо функцію для запиту в InPost
-        const inpost_code = await sendInpostRequest(
-          numberShipment,
-          crateType,
-          senderPhone,
-          senderEmail
-        );
-        console.log(inpost_code+"iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+          const inpostCode = await sendInpostRequest(
+            numberShipment,
+            crateType,
+            senderPhone,
+            senderEmail
+          );
 
-        return inpost_code;
+          console.log("InPost Code: zashli", inpostCode);
+          return inpostCode;
+        } catch (error) {
+          console.error("Error while sending InPost request:", error.message);
+          return null; // або пробросьте помилку далі, якщо це критично
+        }
       };
 
-      const inpost_code = await sendInpost();
-
+  const inpost_code = await sendInpost();
+      shipmentData.inpost_code = inpost_code;
+      if (!inpost_code) {
+        console.error("InPost code not generated!");
+        // За необхідності виконайте іншу логіку
+      }
       // Оновлення Shipment з кодом InPost
       console.log("Оновлення Shipment з inpost_code:", inpost_code);
 
@@ -333,7 +412,7 @@ shipmentData.np_tracking_number=npTruckNumber;
       });
       console.log("Оновлений Shipment:", updatedShipment);
 
-      shipmentData.inpost_code = inpost_code; // Додаємо код до об'єкта, який повертається у відповідь
+      // Додаємо код до об'єкта, який повертається у відповідь
 
       // Підтверджуємо транзакцію
       await t.commit();
