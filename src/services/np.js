@@ -66,6 +66,8 @@ const formattedDate = currentDate.toLocaleDateString("uk-UA", {
   month: "2-digit",
   year: "numeric",
 });
+    console.log(valuationNp);
+    console.log("valuationNp");
     const methodProperties = {
      PayerType : "Sender",
      PaymentMethod : "NonCash",
