@@ -7,7 +7,10 @@ export async function convertToUAH(amountInPln) {
 
       // Конвертуємо суму
       const amountInUAH = amountInPln * plnRate;
-      return amountInUAH.toFixed(2); // Округлення до 2 знаків
+      console.log(amountInPln + "PLN");
+      console.log(amountInUAH + "UAH");
+
+      return amountInUAH.toFixed(2).toString(); // Округлення до 2 знаків
     } catch (error) {
       console.error("Помилка отримання курсу валют:", error);
       return null;
@@ -15,10 +18,10 @@ export async function convertToUAH(amountInPln) {
   }
 
   // Використання
-  convertToUAH(100).then((uah) => {
-    let uahOur = uah *1.05;
-    console.log(`100 PLN = ${uahOur} UAH`);
-    return uahOur;
+  // convertToUAH(100).then((uah) => {
+  //   let uahOur = uah *1.05;
+  //   console.log(`100 PLN = ${uahOur} UAH`);
+  //   return uahOur.toString();
 
-  });
-  convertToUAH(100);
+  // });
+  // convertToUAH(100);

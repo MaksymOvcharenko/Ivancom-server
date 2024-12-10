@@ -268,7 +268,7 @@ if (recipientAddress.delivery_method === 'address') {
 
         try {
           const descriptionNp = parcel.description.contents;
-          const valuationNp = convertToUAH(parcel.estimated_value);
+          const valuationNp = await convertToUAH(parcel.estimated_value);
           const cityNpRef = recipientAddress.np_city_ref;
           const recipientNpRef = refNpUser;
           const recipientContactNpRef = refNpUserContact;
@@ -313,7 +313,7 @@ if (recipientAddress.delivery_method === 'department'){
     const sendNp = async () => {
     try {
       const descriptionNp = parcel.description.contents;
-      const valuationNp = convertToUAH(parcel.estimated_value);
+      const valuationNp = await convertToUAH(parcel.estimated_value);
       const cityNpRef = recipientAddress.np_city_ref;
       const recipientNpRef = refNpUser;
       const recipientContactNpRef = refNpUserContact;
