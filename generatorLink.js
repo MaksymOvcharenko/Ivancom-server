@@ -77,7 +77,7 @@
 
   // Виклик функції
   // loginAndFillForm("Test123", "25", "Testowyi", "Example@gmail.com", "48574267422", "31-223", "Krakow", "Jana Pawla II", "154");
-  import puppeteer from 'puppeteer';
+  // import puppeteer from 'puppeteer';
 
 
   export async function loginAndFillForm(
@@ -182,10 +182,10 @@
 // loginToWebsite().catch(err => {
 //   console.error('Ошибка:', err);
 // });
-(async () => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto('https://panel.przelewy24.pl/generator_link.php');
-    console.log('Page title:', await page.title());
-    await browser.close();
-  })();
+// (async () => {
+//     const browser = await puppeteer.launch();
+//     const page = await browser.newPage();
+//     await page.goto('https://panel.przelewy24.pl/generator_link.php');
+//     console.log('Page title:', await page.title());
+//     await browser.close();
+//   })();
