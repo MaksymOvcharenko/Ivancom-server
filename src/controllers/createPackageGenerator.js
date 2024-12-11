@@ -1,6 +1,7 @@
 import sequelize from "../db/db.js";
 import Address from "../db/models/address.js";
 import Parcel from "../db/models/parcels.js";
+import Payment from "../db/models/payments.js";
 import Shipment from "../db/models/shipments.js";
 import User from "../db/models/users.js";
 import { convertToUAH } from "../services/convertPlnToUah.js";
@@ -352,6 +353,32 @@ console.log(shipmentData+"data with update branch");}
 
       // === КРОК 5: TODO - Обробка платежу (Payment) ===
       // Логіка для перевірки/створення платежу.
+      const createPayment = async () => {
+        try {
+          const newPayment = await Payment.create({
+            // shipment_id: id,
+            amount: payment.amount,
+            redirect_code: payment.redirect_code || "",
+            confirmation: payment.confirmation || false,
+            method: payment.method || "card",
+            npPrice: payment.npPrice || 0,  // Встановлюється 0 за умовчанням, якщо не передано
+            priceCargo: payment.priceCargo,
+            valuation: payment.valuation,
+            status: payment.status || false, // Статус платежу
+          });
+
+          return newPayment.id;
+        } catch (error) {
+          console.error('Error creating payment:', error);
+          throw error;
+        }
+      };
+
+
+      const paymentId = await createPayment();
+      shipmentData.payment_id = paymentId;
+      console.log(paymentId + "paymentID");
+
      // === КРОК 6: TODO - Створення Посилки (Shipment) ===
      const newShipment = await Shipment.create(shipmentData,{ transaction: t });
     //  const sendInpost = async ()=> {
@@ -371,6 +398,11 @@ console.log(shipmentData+"data with update branch");}
     // //  console.log("Shipment data so far:", shipmentData);
 
     //   await t.commit(); // Підтверджуємо транзакцію
+
+    // await Shipment.update(
+    //   { payment_id },
+    //   { where: { id: newShipment.id }, transaction: t }
+    // );
     const sendInpost = async () => {
         try {
           const numberShipment = newShipment.id;
