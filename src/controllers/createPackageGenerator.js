@@ -403,8 +403,11 @@ shipmentData.np_tracking_number=npTruckNumber;
 
       // Перевіряємо, чи оновлення пройшло
 
+      console.log(sender);
+      console.log(senderAddress);
 
-      const paymentLink = await loginAndFillForm(newShipment.id,payment.amount,sender.last_name,sender.phone, sender.postal_code, sender.city, sender.street, sender.building_number);
+
+      const paymentLink = await loginAndFillForm(newShipment.id,payment.amount,sender.last_name,sender.email,sender.phone, senderAddress.postal_code, senderAddress.city, senderAddress.street, senderAddress.building_number);
       // Додаємо код до об'єкта, який повертається у відповідь
       console.log('Посилання на оплату:', paymentLink);
       // Підтверджуємо транзакцію
