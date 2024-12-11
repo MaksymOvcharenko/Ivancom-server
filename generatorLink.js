@@ -4,7 +4,6 @@ import puppeteer from 'puppeteer';
 
 
 
-import puppeteer from 'puppeteer';
 
 export async function loginAndFillForm(shipmentID, summa, senderFullName, senderEmail, senderPhone, senderPostalCode, senderCity, senderStreet, senderHouse) {
     const browser = await puppeteer.launch({ headless: true });
