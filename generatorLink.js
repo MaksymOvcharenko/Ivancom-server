@@ -3,6 +3,7 @@ import puppeteer from 'puppeteer';
 
 
 
+
 export async function loginAndFillForm(shipmentID, summa, senderFullName, senderEmail, senderPhone, senderPostalCode, senderCity, senderStreet, senderHouse) {
     const browser = await puppeteer.launch({ headless: true});
     const page = await browser.newPage();
@@ -75,7 +76,7 @@ export async function loginAndFillForm(shipmentID, summa, senderFullName, sender
   }
 
   // Виклик функції
-  loginAndFillForm("Test123", "25", "Testowyi", "Example@gmail.com", "48574267422", "31-223", "Krakow", "Jana Pawla II", "154");
+  // loginAndFillForm("Test123", "25", "Testowyi", "Example@gmail.com", "48574267422", "31-223", "Krakow", "Jana Pawla II", "154");
 
 
 
