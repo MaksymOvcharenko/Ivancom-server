@@ -77,7 +77,7 @@
 
   // Виклик функції
   // loginAndFillForm("Test123", "25", "Testowyi", "Example@gmail.com", "48574267422", "31-223", "Krakow", "Jana Pawla II", "154");
-  // import puppeteer from 'puppeteer';
+  import puppeteer from 'puppeteer';
 
 
   export async function loginAndFillForm(
@@ -93,86 +93,86 @@
   ) {
     console.log('Запуск Puppeteer...');
 
-    // const browser = await puppeteer.launch({ headless: true });
-    // const page = await browser.newPage();
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
 
-    // try {
-    //   console.log('Перехід на сторінку авторизації...');
-    //   await page.goto('https://panel.przelewy24.pl/generator_link.php', {
-    //     waitUntil: 'load',
-    //     timeout: 0,
-    //   });
-    //   console.log('Сторінка завантажена.');
+    try {
+      console.log('Перехід на сторінку авторизації...');
+      await page.goto('https://panel.przelewy24.pl/generator_link.php', {
+        waitUntil: 'load',
+        timeout: 0,
+      });
+      console.log('Сторінка завантажена.');
 
-    //   console.log('Виконую авторизацію...');
-    //   await page.type('#lo_login', '320208');
-    //   await page.type('#lo_haslo', 'Ivancomparcels@2024');
-    //   await Promise.all([
-    //     page.click('#loginButton'),
-    //     page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 }),
-    //   ]);
-    //   console.log('Авторизація успішна!');
+      console.log('Виконую авторизацію...');
+      await page.type('#lo_login', '320208');
+      await page.type('#lo_haslo', 'Ivancomparcels@2024');
+      await Promise.all([
+        page.click('#loginButton'),
+        page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 }),
+      ]);
+      console.log('Авторизація успішна!');
 
-    //   console.log('Перевіряю доступність форми...');
-    //   await page.waitForSelector('#formsz', { visible: true, timeout: 60000 });
-    //   console.log('Форма доступна.');
+      console.log('Перевіряю доступність форми...');
+      await page.waitForSelector('#formsz', { visible: true, timeout: 60000 });
+      console.log('Форма доступна.');
 
-    //   console.log('Заповнюю поля форми...');
-    //   console.log(`shipmentID: ${shipmentID}`);
-    //   console.log(`summa: ${summa}`);
-    //   console.log(`senderFullName: ${senderFullName}`);
-    //   console.log(`senderEmail: ${senderEmail}`);
-    //   console.log(`senderPhone: ${senderPhone}`);
-    //   console.log(`senderPostalCode: ${senderPostalCode}`);
-    //   console.log(`senderCity: ${senderCity}`);
-    //   console.log(`senderStreet: ${senderStreet}`);
-    //   console.log(`senderHouse: ${senderHouse}`);
+      console.log('Заповнюю поля форми...');
+      console.log(`shipmentID: ${shipmentID}`);
+      console.log(`summa: ${summa}`);
+      console.log(`senderFullName: ${senderFullName}`);
+      console.log(`senderEmail: ${senderEmail}`);
+      console.log(`senderPhone: ${senderPhone}`);
+      console.log(`senderPostalCode: ${senderPostalCode}`);
+      console.log(`senderCity: ${senderCity}`);
+      console.log(`senderStreet: ${senderStreet}`);
+      console.log(`senderHouse: ${senderHouse}`);
 
-    //   await page.select('select[name="z24_id_sprzedawcy"]', '320208');
-    //   await page.type('input[name="z24_nazwa"]', `Plata za zamowienie numer ${String(shipmentID)}`);
-    //   await page.type('textarea[name="z24_opis"]', 'Zamowienie From Pl to Ua with Inpost');
-    //   await page.type('input[name="z24_kwota"]', String(summa));
-    //   await page.select('select[name="z24_currency"]', 'PLN');
-    //   await page.click('input[name="z24_language"][value="pl"]');
-    //   await page.type('input[name="z24_return_url"]', 'https://example.com');
+      await page.select('select[name="z24_id_sprzedawcy"]', '320208');
+      await page.type('input[name="z24_nazwa"]', `Plata za zamowienie numer ${String(shipmentID)}`);
+      await page.type('textarea[name="z24_opis"]', 'Zamowienie From Pl to Ua with Inpost');
+      await page.type('input[name="z24_kwota"]', String(summa));
+      await page.select('select[name="z24_currency"]', 'PLN');
+      await page.click('input[name="z24_language"][value="pl"]');
+      await page.type('input[name="z24_return_url"]', 'https://example.com');
 
-    //   await page.type('input[name="k24_nazwa"]', senderFullName || '');
-    //   await page.type('input[name="k24_email"]', senderEmail || '');
-    //   await page.type('input[name="k24_telefon"]', senderPhone || '');
-    //   await page.type('input[name="k24_kod"]', senderPostalCode || '');
-    //   await page.type('input[name="k24_miasto"]', senderCity || '');
-    //   await page.type('input[name="k24_ulica"]', senderStreet || '');
-    //   await page.type('input[name="k24_numer_dom"]', senderHouse || '');
-    //   await page.select('select[name="k24_kraj"]', 'PL');
+      await page.type('input[name="k24_nazwa"]', senderFullName || '');
+      await page.type('input[name="k24_email"]', senderEmail || '');
+      await page.type('input[name="k24_telefon"]', senderPhone || '');
+      await page.type('input[name="k24_kod"]', senderPostalCode || '');
+      await page.type('input[name="k24_miasto"]', senderCity || '');
+      await page.type('input[name="k24_ulica"]', senderStreet || '');
+      await page.type('input[name="k24_numer_dom"]', senderHouse || '');
+      await page.select('select[name="k24_kraj"]', 'PL');
 
-    //   console.log('Відправляю форму...');
-    //   await page.waitForSelector('input[type="submit"]');
-    //   await page.click('input[type="submit"]');
+      console.log('Відправляю форму...');
+      await page.waitForSelector('input[type="submit"]');
+      await page.click('input[type="submit"]');
 
-    //   console.log('Очікування редиректу...');
-    //   await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 });
+      console.log('Очікування редиректу...');
+      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 });
 
-    //   const redirectedUrl = page.url();
-    //   console.log('Нова URL-адреса після редиректу:', redirectedUrl);
+      const redirectedUrl = page.url();
+      console.log('Нова URL-адреса після редиректу:', redirectedUrl);
 
-    //   console.log('Чекаю на появу посилання на оплату...');
-    //   await page.waitForSelector('#link', { visible: true, timeout: 60000 });
+      console.log('Чекаю на появу посилання на оплату...');
+      await page.waitForSelector('#link', { visible: true, timeout: 60000 });
 
-    //   const paymentLink = await page.$eval('#link', (el) => el.value);
-    //   console.log('Посилання на оплату:', paymentLink);
+      const paymentLink = await page.$eval('#link', (el) => el.value);
+      console.log('Посилання на оплату:', paymentLink);
 
-    //   await page.screenshot({ path: 'final_state.png' });
-    //   console.log('Скріншот збережено як final_state.png.');
+      await page.screenshot({ path: 'final_state.png' });
+      console.log('Скріншот збережено як final_state.png.');
 
-    //   return paymentLink;
-    // } catch (error) {
-    //   console.error('Помилка при роботі з формою:', error);
-    //   await page.screenshot({ path: 'error_state.png' });
-    //   console.log('Скріншот помилки збережено як error_state.png.');
-    // } finally {
-    //   await browser.close();
-    //   console.log('Браузер закрито.');
-    // }
+      return paymentLink;
+    } catch (error) {
+      console.error('Помилка при роботі з формою:', error);
+      await page.screenshot({ path: 'error_state.png' });
+      console.log('Скріншот помилки збережено як error_state.png.');
+    } finally {
+      await browser.close();
+      console.log('Браузер закрито.');
+    }
   }
 
 
@@ -182,10 +182,10 @@
 // loginToWebsite().catch(err => {
 //   console.error('Ошибка:', err);
 // });
-// (async () => {
-//     const browser = await puppeteer.launch();
-//     const page = await browser.newPage();
-//     await page.goto('https://panel.przelewy24.pl/generator_link.php');
-//     console.log('Page title:', await page.title());
-//     await browser.close();
-//   })();
+(async () => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('https://panel.przelewy24.pl/generator_link.php');
+    console.log('Page title:', await page.title());
+    await browser.close();
+  })();
