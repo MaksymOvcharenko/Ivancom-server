@@ -121,6 +121,7 @@ export const writeData = async (id) => {
    const sender = dataShipment.sender.dataValues;
    const recipient = dataShipment.recipient.dataValues;
    const parcel = dataShipment.parcel.dataValues;
+   const payment = dataShipment.payment.dataValues;
    const senderAddress = dataShipment.senderAddress.dataValues;
    const recipientAddress = dataShipment.recipientAddress.dataValues;
     // Получаем заголовки из Google Sheets
@@ -172,13 +173,13 @@ export const writeData = async (id) => {
           case 'deliveryFloor':
           return recipientAddress.floor_number;
           case 'cargoSumm':
-          return parcel.price;
+          return payment.priceCargo;
           case 'valuaitonSumm':
-          return parcel.price;
+          return payment.valuation;
           case 'npSumm':
-          return parcel.price;
+          return payment.npPrice;
           case 'allSumm':
-          return parcel.price;
+          return payment.amount;
           case 'packageId':
           return dataShipment.shipment.id;
           case 'inpostCode':
