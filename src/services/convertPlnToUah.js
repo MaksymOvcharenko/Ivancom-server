@@ -7,8 +7,7 @@ export async function convertToUAH(amountInPln) {
 
       // Конвертуємо суму
       const amountInUAH = amountInPln * plnRate;
-      console.log(amountInPln + "PLN");
-      console.log(amountInUAH + "UAH");
+     
 
       return amountInUAH.toFixed(2).toString(); // Округлення до 2 знаків
     } catch (error) {

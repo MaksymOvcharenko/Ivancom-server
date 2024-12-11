@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer';
 
 
 export async function loginAndFillForm(shipmentID, summa, senderFullName, senderEmail, senderPhone, senderPostalCode, senderCity, senderStreet, senderHouse) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: true});
     const page = await browser.newPage();
 
     try {
@@ -25,9 +25,9 @@ export async function loginAndFillForm(shipmentID, summa, senderFullName, sender
 
       // 4. Заповнення полів форми
       await page.select('select[name="z24_id_sprzedawcy"]', '320208'); // Вибрати ID продавця
-      await page.type('input[name="z24_nazwa"]', `Plata za zamowienie numer ${shipmentID}`); // Заповнити "Титул платежу"
+      await page.type('input[name="z24_nazwa"]', `Plata za zamowienie numer ${String(shipmentID)}`); // Заповнити "Титул платежу"
       await page.type('textarea[name="z24_opis"]', 'Zamowienie From Pl to Ua with Inpost'); // Заповнити "Додатковий опис"
-      await page.type('input[name="z24_kwota"]', summa); // Ввести суму
+      await page.type('input[name="z24_kwota"]', String(summa)); // Ввести суму
       await page.select('select[name="z24_currency"]', 'selected'); // Вибрати валюту (USD)
       await page.click('input[name="z24_language"][value="pl"]'); // Обрати англійську мову
       await page.type('input[name="z24_return_url"]', 'https://example.com'); // Ввести URL повернення
@@ -62,9 +62,10 @@ export async function loginAndFillForm(shipmentID, summa, senderFullName, sender
 
       // 9. Забрати значення з input (посилання на оплату)
       const paymentLink = await page.$eval('#link', el => el.value);
-      console.log('Посилання на оплату:', paymentLink);
 
-      await page.screenshot({ path: 'form_submission.png' }); // Зберегти скріншот для перевірки
+      console.log('Посилання на оплату:', paymentLink);
+      await page.screenshot({ path: 'form_submission.png' });
+      return paymentLink; // Зберегти скріншот для перевірки
     } catch (error) {
       console.error('Помилка при роботі з формою:', error);
     } finally {
