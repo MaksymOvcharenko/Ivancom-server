@@ -112,7 +112,7 @@ const data = {
 };
 
 // Функция для записи данных в таблицу
-export const writeData = async (id) => {
+export const writeData = async (id, paymentLink) => {
   try {
     const dataShipment =  await getShipmentByIdForSendGooGle(id);
 
@@ -186,6 +186,8 @@ export const writeData = async (id) => {
           return dataShipment.shipment.inpost_code;
           case 'ttnNp':
           return dataShipment.shipment.np_tracking_number;
+          case 'paymentLink':
+          return paymentLink;
 
         case 'Created At':
           return data.sender.created_at; // Используйте соответствующие поля для других данных

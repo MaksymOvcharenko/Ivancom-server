@@ -1,3 +1,4 @@
+import { loginAndFillForm } from "../../generatorLink.js";
 import sequelize from "../db/db.js";
 import Address from "../db/models/address.js";
 import Parcel from "../db/models/parcels.js";
@@ -55,7 +56,9 @@ if (crateDimensions[parcel.crate_name]) {
   weightActual = crate.weightActual;
   weightActuality = weightActual;
   // Розрахунок об'ємної ваги
-  weightDimensional = (length * width * height) / 4000; // Стандартний коефіцієнт для переводу в кг
+  weightDimensional = (length * width * height) / 4000;
+  console.log(weightDimensional);
+   // Стандартний коефіцієнт для переводу в кг
 } else {
   throw new Error(`Невідомий тип скриньки: ${parcel.crate_name}`);
 }
@@ -70,14 +73,7 @@ if (crateDimensions[parcel.crate_name]) {
       if (existingSender) {
         senderId = existingSender.id;
       } else {
-        // const refUser = await createContactPersonRef(  ...Можливість створювати реф для НП в Відправнику
-        //   sender.first_name,
-        //   sender.middle_name || ".",
-        //   sender.last_name,
-        //   sender.phone,
-        //   sender.email
-        // );
-        // console.log("Sender NP Ref:", refUser[0]);
+
 
         const newSender = await User.create(
           {
@@ -112,8 +108,7 @@ if (crateDimensions[parcel.crate_name]) {
           recipient.phone,
           recipient.email
         );
-        console.log("NP Response Data:", JSON.stringify(refRecipient));
-        console.log(refRecipient.Ref);
+
         refNpUser = refRecipient.Ref;
         refNpUserContact = refRecipient.ContactPerson.data[0].Ref;
 
@@ -249,23 +244,11 @@ shipmentData.recipient_address_id = recipientAddressId;
 // Додаємо ID адреси відправника до shipmentData
 shipmentData.sender_address_id = senderAddressId;
 // Створюємо НП ТТН
-// const sendNp = async ()=>{
-//     const descriptionNp = parcel.description.contents;
-// const valuationNp = convertToUAH(parcel.estimated_value);
-// const cityNpRef = recipientAddress.np_city_ref;
-// const recipientNpRef = refNpUser;
-// const recipientContactNpRef = refNpUserContact;
-// const recipientNpWarehouseRef = recipientAddress.np_branch_ref;
-// const recipientNpPhone = recipient.phone;
-// let npTruckNumber = await CreateInternetDocumentWarehouse(descriptionNp,valuationNp,weightActuality,cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone );
-// console.log(npTruckNumber);
 
-// return npTruckNumber;
-// };
 if (recipientAddress.delivery_method === 'address') {
 
     const sendNpAddress = async () => {
-        console.log("zbssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+
 
         try {
           const descriptionNp = parcel.description.contents;
@@ -292,7 +275,7 @@ if (recipientAddress.delivery_method === 'address') {
             recipientNpFlat,
           );
 
-          console.log("Nova Poshta Truck Number: sssssssssssssssssssssssssssssssssssssssssssssssssssssssss", npTruckNumber);
+
           return npTruckNumber;
         } catch (error) {
           console.error("Error while creating Nova Poshta document:", error.message);
@@ -305,9 +288,9 @@ if (recipientAddress.delivery_method === 'address') {
         console.error("Nova Poshta tracking number not generated!");
         // За необхідності виконайте іншу логіку
       }
-      console.log(shipmentData+"data with address");
+
 shipmentData.np_tracking_number=npTruckNumber;
-console.log(shipmentData+"data with  update address");
+
 
   }
 if (recipientAddress.delivery_method === 'department'){
@@ -332,7 +315,7 @@ if (recipientAddress.delivery_method === 'department'){
         recipientNpPhone
       );
 
-      console.log("Nova Poshta Truck Number:", npTruckNumber);
+
       return npTruckNumber;
     } catch (error) {
       console.error("Error while creating Nova Poshta document:", error.message);
@@ -344,9 +327,9 @@ if (recipientAddress.delivery_method === 'department'){
     console.error("Nova Poshta tracking number not generated!");
     // За необхідності виконайте іншу логіку
   }
-  console.log(shipmentData+"data with branch");
+
 shipmentData.np_tracking_number=npTruckNumber;
-console.log(shipmentData+"data with update branch");}
+}
 
 
 
@@ -377,32 +360,11 @@ console.log(shipmentData+"data with update branch");}
 
       const paymentId = await createPayment();
       shipmentData.payment_id = paymentId;
-      console.log(paymentId + "paymentID");
+
 
      // === КРОК 6: TODO - Створення Посилки (Shipment) ===
      const newShipment = await Shipment.create(shipmentData,{ transaction: t });
-    //  const sendInpost = async ()=> {
-    //     const numberShipment = newShipment.id;
-    //     const crateType = parcel.crate_name;
-    //     // last_name: sender.last_name,
-    //     // first_name: sender.first_name,
-    //     // middle_name: recipient.middle_name || ".",
-    //     // phone: sender.phone,
-    //     // email: sender.email,
-    //     const senderPhone = sender.phone;
-    //     const senderEmail = sender.email;
-    //     let inpost_code = await sendInpostRequest(numberShipment,crateType,senderPhone,senderEmail);
-    // };
-    // let inpost_code = await sendInpost();
-    // shipmentData.inpost_code= inpost_code;
-    // //  console.log("Shipment data so far:", shipmentData);
 
-    //   await t.commit(); // Підтверджуємо транзакцію
-
-    // await Shipment.update(
-    //   { payment_id },
-    //   { where: { id: newShipment.id }, transaction: t }
-    // );
     const sendInpost = async () => {
         try {
           const numberShipment = newShipment.id;
@@ -417,7 +379,7 @@ console.log(shipmentData+"data with update branch");}
             senderEmail
           );
 
-          console.log("InPost Code: zashli", inpostCode);
+
           return inpostCode;
         } catch (error) {
           console.error("Error while sending InPost request:", error.message);
@@ -432,7 +394,7 @@ console.log(shipmentData+"data with update branch");}
         // За необхідності виконайте іншу логіку
       }
       // Оновлення Shipment з кодом InPost
-      console.log("Оновлення Shipment з inpost_code:", inpost_code);
+
 
       await Shipment.update(
         { inpost_code },
@@ -440,16 +402,14 @@ console.log(shipmentData+"data with update branch");}
       );
 
       // Перевіряємо, чи оновлення пройшло
-      const updatedShipment = await Shipment.findOne({
-        where: { id: newShipment.id },
-      });
-      console.log("Оновлений Shipment:", updatedShipment);
 
+
+      const paymentLink = await loginAndFillForm(newShipment.id,payment.amount,sender.last_name,sender.phone, sender.postal_code, sender.city, sender.street, sender.building_number);
       // Додаємо код до об'єкта, який повертається у відповідь
-
+      console.log('Посилання на оплату:', paymentLink);
       // Підтверджуємо транзакцію
       await t.commit();
-      await writeData(newShipment.id);
+      await writeData(newShipment.id, paymentLink);
       res.status(201).json({
         success: true,
         message: "Shipment created successfully",

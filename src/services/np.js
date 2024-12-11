@@ -46,7 +46,7 @@ export const createContactPersonRef = async (firstName,lastName,phone,email) => 
 
 
 
-    console.log(response.data + "data with np");
+
 
     return response.data.data[0];
     ; // Повертаємо відповідь від API
@@ -66,8 +66,8 @@ const formattedDate = currentDate.toLocaleDateString("uk-UA", {
   month: "2-digit",
   year: "numeric",
 });
-    console.log(valuationNp);
-    console.log("valuationNp");
+
+
     const methodProperties = {
      PayerType : "Sender",
      PaymentMethod : "NonCash",
@@ -96,7 +96,7 @@ const formattedDate = currentDate.toLocaleDateString("uk-UA", {
      ContactRecipient : recipientContactNpRef,
      RecipientsPhone : recipientNpPhone
         };
-    console.log(methodProperties);
+
 
     const requestData = {
         // apiKey: "a13a950b799ed7cbe09727463f044465",
@@ -113,7 +113,6 @@ const formattedDate = currentDate.toLocaleDateString("uk-UA", {
 
 
 
-        console.log(response.data + "data with np");
 
         return response.data.data[0].IntDocNumber;
         ; // Повертаємо відповідь від API
@@ -162,7 +161,7 @@ year: "numeric",
    ContactRecipient : recipientContactNpRef,
    RecipientsPhone : recipientNpPhone
       };
-  console.log(methodProperties);
+
 
   const requestData = {
       // apiKey: "a13a950b799ed7cbe09727463f044465",
@@ -179,7 +178,7 @@ year: "numeric",
 
 
 
-      console.log(response.data); // Логуй всю відповідь
+
 
       return response.data.data[0].IntDocNumber;
       ; // Повертаємо відповідь від API
@@ -200,7 +199,7 @@ Flat : recipientNpFlat,
     };
 
 
-  console.log(methodProperties+"Create Address");
+
 
 
 const requestData = {
@@ -220,7 +219,7 @@ try {
 
 
 
-  console.log(response.data + "data with np");
+
 
   return response.data.data[0].Ref;
   ; // Повертаємо відповідь від API
@@ -245,7 +244,7 @@ const requestData = {
 };
 
 const apiUrl = "https://api.novaposhta.ua/v2.0/json/"; // Базова URL для API Нової Пошти
-console.log(methodProperties+"get Street");
+
 
 try {
   const response = await axios.post(apiUrl, requestData,
@@ -254,7 +253,7 @@ try {
 
 
 
-  console.log(response.data);
+  
 
   return response.data.data[0].Ref;
   ; // Повертаємо відповідь від API
