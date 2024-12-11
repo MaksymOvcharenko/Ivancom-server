@@ -174,9 +174,9 @@
     } finally {
       // Закрити браузер
       await browser.close();
+    }
 
 
-    
 
 
 
