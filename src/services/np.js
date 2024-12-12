@@ -77,7 +77,7 @@ const formattedDate = currentDate.toLocaleDateString("uk-UA", {
      Weight : weightActuality,
      ServiceType : "WarehouseWarehouse",
      SeatsAmount : "1",
-     Description : descriptionNp,
+     Description : descriptionNp || "Опис відсутній",
      Cost : valuationNp,
     //  "CitySender" : "83829d5b-f91d-11ea-80fb-b8830365bd04",
     //  "Sender" : "b0b5fa26-0ebd-11ef-bcd0-48df37b921da",
@@ -113,6 +113,7 @@ const formattedDate = currentDate.toLocaleDateString("uk-UA", {
 
 
 
+        console.log(response);
 
         return response.data.data[0].IntDocNumber;
         ; // Повертаємо відповідь від API
@@ -142,7 +143,7 @@ year: "numeric",
    Weight : weightActuality,
    ServiceType : "WarehouseDoors",
    SeatsAmount : "1",
-   Description : descriptionNp,
+   Description : descriptionNp || "Опис відсутній",
    Cost : valuationNp,
   //  "CitySender" : "83829d5b-f91d-11ea-80fb-b8830365bd04",
   //  "Sender" : "b0b5fa26-0ebd-11ef-bcd0-48df37b921da",
@@ -179,6 +180,7 @@ year: "numeric",
 
 
 
+      console.log(response);
 
       return response.data.data[0].IntDocNumber;
       ; // Повертаємо відповідь від API
@@ -253,7 +255,7 @@ try {
 
 
 
-  
+
 
   return response.data.data[0].Ref;
   ; // Повертаємо відповідь від API
