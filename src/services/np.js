@@ -47,9 +47,10 @@ export const createContactPersonRef = async (firstName,lastName,phone,email) => 
 
 
 
+    console.log(response);
 
     return response.data.data[0];
-    ; // Повертаємо відповідь від API
+     // Повертаємо відповідь від API
   } catch (error) {
     console.error("Помилка запиту:", error.response ? error.response.data : error.message);
     throw new Error(error.response ? error.response.data : error.message); // Кидаємо помилку, якщо щось пішло не так
@@ -222,7 +223,7 @@ try {
 
 
 
-
+  console.log(response);
   return response.data.data[0].Ref;
   ; // Повертаємо відповідь від API
 } catch (error) {
@@ -256,7 +257,7 @@ try {
 
 
 
-
+  console.log(response);
   return response.data.data[0].Ref;
   ; // Повертаємо відповідь від API
 } catch (error) {

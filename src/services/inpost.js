@@ -30,8 +30,9 @@ export async function sendInpostRequest(numberShipment,crateType,senderPhone,sen
       <rma>${numberShipment}</rma>
       <packType>${crateType}</packType>
       <expirationDate>${futureDate}</expirationDate>
-      <senderPhone>${senderPhone}</senderPhone>
-      <senderEmail>${senderEmail}</senderEmail>
+
+      <senderPhone>48696200638</senderPhone>
+      <senderEmail>ivancominpost@gmail.com</senderEmail>
       <returnDescription1>Zamówienie:${numberShipment}</returnDescription1>
       <address>
         <name>Ivan</name>
@@ -77,7 +78,7 @@ export async function sendInpostRequest(numberShipment,crateType,senderPhone,sen
         // Приклад отримання значення коду з XML:
         const code = parsedXml?.paczkomaty?.return?.[0]?.code?.[0];
 
-       
+
         return code;
       } catch (parseError) {
         console.error("Помилка парсингу XML:", parseError.message);
