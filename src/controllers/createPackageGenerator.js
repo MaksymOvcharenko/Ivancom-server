@@ -418,6 +418,7 @@ shipmentData.np_tracking_number=npTruckNumber;
         message: "Shipment created successfully",
         data: {...shipmentData, shipmentId:newShipment.id},
         id: newShipment.id,
+        paymentLink: paymentLink,
       });
     } catch (error) {
       await t.rollback(); // Відкат транзакції у разі помилки
