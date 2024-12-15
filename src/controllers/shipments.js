@@ -223,13 +223,13 @@ export const updatePaymentStatus = async (req, res) => {
     }
 
     // Получаем payment_id из shipment
-  
+
 
     const paymentId = shipment.dataValues.payment_id;
 
     // Обновляем статус оплаты в таблице payments
     await Payment.update(
-      { status: paymentStatus }, // Новое значение статуса
+      { status: "true" }, // Новое значение статуса
       { where: { id: paymentId } } // Поиск по payment_id
     );
   const redirectUrl = `${FRONTEND_URL}?id=${shipmentId}`;
