@@ -201,3 +201,44 @@ export const deleteShipment = async (req, res) => {
     });
   }
 };
+ // Импорт моделей
+const FRONTEND_URL = 'https://package-ivancom.vercel.app/confirmation'; // Замените на URL вашего фронтенда
+
+// Контроллер для обновления статуса оплаты
+export const updatePaymentStatus = async (req, res) => {
+  const { shipmentId, paymentStatus } = req.query;
+  console.log(shipmentId, paymentStatus);
+
+  // Проверяем, что shipmentId и paymentStatus переданы
+  if (!shipmentId || !paymentStatus) {
+    return res.status(400).json({ error: 'shipmentId и paymentStatus обязательны' });
+  }
+
+  try {
+    // Находим shipment по ID
+    const shipment = await Shipment.findOne({ where: { id: shipmentId } });
+
+    if (!shipment) {
+      return res.status(404).json({ error: 'Отправление не найдено' });
+    }
+
+    // Получаем payment_id из shipment
+  
+
+    const paymentId = shipment.dataValues.payment_id;
+
+    // Обновляем статус оплаты в таблице payments
+    await Payment.update(
+      { status: paymentStatus }, // Новое значение статуса
+      { where: { id: paymentId } } // Поиск по payment_id
+    );
+  const redirectUrl = `${FRONTEND_URL}?id=${shipmentId}`;
+
+
+    // Редиректим пользователя на фронтенд с shipmentId
+    return res.redirect(redirectUrl);
+  } catch (error) {
+    console.error('Ошибка при обновлении статуса оплаты:', error);
+    return res.status(500).json({ error: 'Ошибка сервера' });
+  }
+};
