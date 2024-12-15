@@ -135,7 +135,7 @@
       // await page.type('input[name="z24_kwota"]', String(summa));// змінено для тесту
       await page.select('select[name="z24_currency"]', 'PLN');
       await page.click('input[name="z24_language"][value="pl"]');
-      await page.type('input[name="z24_return_url"]', `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${shipmentID}&paymentStatus=1`);
+      await page.type('input[name="z24_return_url"]', `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${shipmentID}&paymentStatus=1&dummy=extra`);
 
       await page.type('input[name="k24_nazwa"]', senderFullName || '');
       await page.type('input[name="k24_email"]', senderEmail || '');
