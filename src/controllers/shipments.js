@@ -206,11 +206,11 @@ const FRONTEND_URL = 'https://package-ivancom.vercel.app/confirmation'; // За�
 
 // Контроллер для обновления статуса оплаты
 export const updatePaymentStatus = async (req, res) => {
-  const { shipmentId, paymentStatus } = req.query;
-  console.log(shipmentId, paymentStatus);
+  const { shipmentId, status } = req.query;
+  console.log(shipmentId, status);
 
   // Проверяем, что shipmentId и paymentStatus переданы
-  if (!shipmentId || !paymentStatus) {
+  if (!shipmentId || !status) {
     return res.status(400).json({ error: 'shipmentId и paymentStatus обязательны' });
   }
 
