@@ -131,8 +131,8 @@
       await page.select('select[name="z24_id_sprzedawcy"]', '320208');
       await page.type('input[name="z24_nazwa"]', `Plata za zamowienie numer ${String(shipmentID)}`);
       await page.type('textarea[name="z24_opis"]', 'Zamowienie From Pl to Ua with Inpost');
-      await page.type('input[name="z24_kwota"]', String(1));// змінено для тесту
-      // await page.type('input[name="z24_kwota"]', String(summa));// змінено для тесту
+      // await page.type('input[name="z24_kwota"]', String(1));// змінено для тесту
+      await page.type('input[name="z24_kwota"]', String(summa));// змінено для тесту
       await page.select('select[name="z24_currency"]', 'PLN');
       await page.click('input[name="z24_language"][value="pl"]');
       await page.type('input[name="z24_return_url"]', `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${shipmentID}&status=1&dummy=extra`);
