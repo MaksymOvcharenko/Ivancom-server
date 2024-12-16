@@ -151,7 +151,7 @@
       await page.click('input[type="submit"]');
 
       console.log('Очікування редиректу...');
-      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 });
+      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 10000 });
 
       const redirectedUrl = page.url();
       console.log('Нова URL-адреса після редиректу:', redirectedUrl);

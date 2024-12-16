@@ -62,11 +62,12 @@ export const createContactPersonRef = async (firstName,lastName,phone,email) => 
 
 export const CreateInternetDocumentWarehouse = async (descriptionNp, valuationNp,weightActuality, cityNpRef,recipientNpRef,recipientContactNpRef,recipientNpWarehouseRef,recipientNpPhone) => {
     const currentDate = new Date();
-const formattedDate = currentDate.toLocaleDateString("uk-UA", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-});
+    const formattedDate = currentDate.toLocaleDateString("uk-UA", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "Europe/Kiev", // вказуємо часовий пояс Києва
+    });
 
 
     const methodProperties = {
@@ -127,11 +128,12 @@ export const CreateInternetDocumentAddress = async (descriptionNp, valuationNp,w
   recipientNpBuildingNumber,
   recipientNpFlat,) => {
   const currentDate = new Date();
-const formattedDate = currentDate.toLocaleDateString("uk-UA", {
-day: "2-digit",
-month: "2-digit",
-year: "numeric",
-});
+  const formattedDate = currentDate.toLocaleDateString("uk-UA", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Europe/Kiev", // вказуємо часовий пояс Києва
+  });
   const recAddress = await createAddress(recipientNpRef,cityNpRef,recipientNpStreet,
     recipientNpBuildingNumber,
     recipientNpFlat,);
