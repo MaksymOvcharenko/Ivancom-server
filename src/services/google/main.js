@@ -1,13 +1,13 @@
 
 import { getShipmentByIdForSendGooGle } from "../checkDataForID.js";
-import { appendData, getHeaders } from "./google.js";
+import { appendData, getData, getHeaders, updateRow } from "./google.js";
 
 
 
 
 const spreadsheetId = '1nGQDLwJ4MpD0W_vZG-EdNfMbMghSM_dr3D09MGvU2eM'; // ID вашей таблицы
 const range = 'Sheet1!A1:AZ1'; // Диапазон, в котором находятся заголовки
-
+const rangeForUpdate = 'Sheet1!A1:AZ'; // Диапазон, в котором находятся заголовки
 
 // Данные из вашего объекта
 const data = {
@@ -203,4 +203,49 @@ export const writeData = async (id, paymentLink) => {
   }
 };
 
-writeData();
+// writeData();
+// Убедитесь, что у вас есть вспомогательные функции для работы с Google Sheets
+
+
+
+export const updatePaymentStatusInGoogleSheets = async (shipmentId, paymentStatus) => {
+  try {
+    // 1. Получаем все строки из таблицы
+    const data = await getData(spreadsheetId, rangeForUpdate);
+    const headers = data[0]; // Предположим, что первая строка содержит заголовки
+    console.log('Headers:', headers); // Заголовки из таблицы
+console.log('Data:', data); // Все строки данных
+
+    // 2. Находим индекс столбцов "packageId" и "status"
+    const packageIdIndex = headers.indexOf('packageId');
+    const statusIndex = headers.indexOf('paymentStatus'); // Название заголовка столбца для статуса (замените, если он называется иначе)
+
+    if (packageIdIndex === -1 || statusIndex === -1) {
+      throw new Error('Не найден столбец packageId или status в таблице.');
+    }
+
+    // 3. Ищем строку с нужным ID посылки
+    const rowIndex = data.findIndex((row, index) => {
+      if (index === 0) return false; // Пропускаем заголовок
+      return row[packageIdIndex] == shipmentId;
+    });
+
+    if (rowIndex === -1) {
+      console.log(`Посылка с ID ${shipmentId} не найдена в таблице.`);
+      return;
+    }
+
+    // 4. Обновляем статус на "Оплачено" (или переданный paymentStatus)
+    const updatedRow = [...data[rowIndex]];
+    updatedRow[statusIndex] = paymentStatus ? 'Оплачено' : 'Не оплачено';
+
+    // 5. Обновляем строку в Google Sheets
+    const updateRange = `Sheet1!A${rowIndex + 1}:AZ${rowIndex + 1}`; // Обновляем диапазон конкретной строки
+    await updateRow(spreadsheetId, updateRange, updatedRow);
+
+    console.log(`Статус для посылки с ID ${shipmentId} успешно обновлён на "${updatedRow[statusIndex]}".`);
+  } catch (error) {
+    console.error('Ошибка при обновлении статуса оплаты:', error);
+  }
+};
+

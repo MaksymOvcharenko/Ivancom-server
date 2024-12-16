@@ -3,6 +3,7 @@ import Parcel from "../db/models/parcels.js";
 import Payment from "../db/models/payments.js";
 import Shipment from "../db/models/shipments.js";
 import User from "../db/models/users.js";
+import { updatePaymentStatusInGoogleSheets } from "../services/google/main.js";
 
 
 export const createShipment = async (req, res) => {
@@ -234,7 +235,7 @@ export const updatePaymentStatus = async (req, res) => {
     );
   const redirectUrl = `${FRONTEND_URL}?id=${shipmentId}`;
 
-
+   await updatePaymentStatusInGoogleSheets(shipmentId,status);
     // Редиректим пользователя на фронтенд с shipmentId
     return res.redirect(redirectUrl);
   } catch (error) {
