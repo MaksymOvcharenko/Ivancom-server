@@ -35,13 +35,14 @@ export async function sendInpostRequest(numberShipment,crateType,senderPhone,sen
       <senderEmail>ivancominpost@gmail.com</senderEmail>
       <returnDescription1>Zamówienie:${numberShipment}</returnDescription1>
       <address>
+      <companyName>Ivancom</companyName>
         <name>Ivan</name>
         <surName>Kysil</surName>
         <email>ivancominpost@gmail.com</email>
-        <street>Dobrego Pasterza</street>
-        <buldingNo>1</buldingNo>
-        <flatNo>4</flatNo>
-        <zipCode>31-416</zipCode>
+        <street>al. Jana Pawła II</street>
+        <buldingNo>154</buldingNo>
+        <flatNo>1</flatNo>
+        <zipCode>31-982</zipCode>
         <town>Krakow</town>
       </address>
     </paczkomaty>
