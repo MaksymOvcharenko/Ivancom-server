@@ -16,41 +16,41 @@ export const writeFormDataWorldUa = async (data) => {
         case 'agreement':
           return data.agreement || '';
         case 'orderAmount':
-          return data.order_amount || '';
+          return data.orderAmount || '';
         case 'sendDate':
-          return data.send_date || '';
+          return data.sendDate || '';
         case 'hidePhone':
-          return data.hide_phone || '';
+          return data.hidePhone || '';
         case 'createdAt':
-          return data.created_at || '';
+          return data.createdAt || '';
         case 'updatedAt':
-          return data.updated_at || '';
+          return data.updatedAt || '';
         case 'recipientPhone':
-          return data.recipient_phone || '';
+          return data.recipientPhone || '';
         case 'recipientName':
-          return data.recipient_name || '';
+          return data.recipientName || '';
         case 'recipientSurname':
-          return data.recipient_surname || '';
+          return data.recipientSurname || '';
         case 'senderEmail':
-          return data.sender_email || '';
+          return data.senderEmail || '';
         case 'content':
           return data.content || '';
         case 'senderSurname':
-          return data.sender_surname || '';
+          return data.senderSurname || '';
         case 'carrier':
           return data.carrier || '';
         case 'trackingNumber':
-          return data.tracking_number || '';
+          return data.trackingNumber || '';
         case 'senderName':
-          return data.sender_name || '';
+          return data.senderName || '';
         case 'senderPhone':
-          return data.sender_phone || '';
+          return data.senderPhone || '';
         case 'promoCode':
-          return data.promo_code || '';
+          return data.promoCode || '';
         case 'currency':
           return data.currency || '';
         case 'npDepartment':
-          return data.np_department || '';
+          return data.npDepartment || '';
         case 'city':
           return data.city || '';
         case 'region':
