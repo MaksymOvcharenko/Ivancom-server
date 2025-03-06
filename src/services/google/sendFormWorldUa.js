@@ -11,45 +11,45 @@ export const writeFormDataWorldUa = async (data) => {
     // Преобразуємо дані в масив значень, які відповідають заголовкам
     const values = headers.map((header) => {
       switch (header) {
-        case 'id':
+        case 'ids':
           return data.id || '';
         case 'agreement':
           return data.agreement || '';
-        case 'order_amount':
+        case 'orderAmount':
           return data.order_amount || '';
-        case 'send_date':
+        case 'sendDate':
           return data.send_date || '';
-        case 'hide_phone':
+        case 'hidePhone':
           return data.hide_phone || '';
-        case 'created_at':
+        case 'createdAt':
           return data.created_at || '';
-        case 'updated_at':
+        case 'updatedAt':
           return data.updated_at || '';
-        case 'recipient_phone':
+        case 'recipientPhone':
           return data.recipient_phone || '';
-        case 'recipient_name':
+        case 'recipientName':
           return data.recipient_name || '';
-        case 'recipient_surname':
+        case 'recipientSurname':
           return data.recipient_surname || '';
-        case 'sender_email':
+        case 'senderEmail':
           return data.sender_email || '';
         case 'content':
           return data.content || '';
-        case 'sender_surname':
+        case 'senderSurname':
           return data.sender_surname || '';
         case 'carrier':
           return data.carrier || '';
-        case 'tracking_number':
+        case 'trackingNumber':
           return data.tracking_number || '';
-        case 'sender_name':
+        case 'senderName':
           return data.sender_name || '';
-        case 'sender_phone':
+        case 'senderPhone':
           return data.sender_phone || '';
-        case 'promo_code':
+        case 'promoCode':
           return data.promo_code || '';
         case 'currency':
           return data.currency || '';
-        case 'np_department':
+        case 'npDepartment':
           return data.np_department || '';
         case 'city':
           return data.city || '';
