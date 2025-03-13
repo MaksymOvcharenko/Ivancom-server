@@ -76,9 +76,10 @@ export const formAnimalsServices = async (formData, files) => {
     const fileLinks = [];
 
     // Завантаження кожного файлу на Google Drive
-    for (const file of files) {
-      console.log(`Завантаження файлу: ${file.originalname}`);
+    const fileArray = files.file || []; // Якщо файли є, використовуємо їх, якщо ні — порожній масив
 
+    // Тепер можна ітерувати по масиву fileArray
+    for (const file of fileArray) {
       const fileMetadata = {
         name: file.originalname,
         parents: ['1iPLycEpJjetwXNDMAG-2iOJMAFGE5IlO'], // Вкажи ID папки на Google Drive
@@ -98,13 +99,8 @@ export const formAnimalsServices = async (formData, files) => {
 
         const fileLink = response.data.webViewLink;
         fileLinks.push(fileLink);
-        console.log(`Файл завантажено на Google Drive. Лінк: ${fileLink}`);
-      } catch (fileError) {
-        console.error(
-          `Помилка при завантаженні файлу ${file.originalname}:`,
-          fileError,
-        );
-        throw fileError;
+      } catch (error) {
+        console.error('Помилка при завантаженні файлу на Google Drive:', error);
       }
     }
 
