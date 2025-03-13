@@ -9,6 +9,7 @@ import wheelRoutes from './wheel.js';
 import formWorldUaRoutes from './forms/formWorldUa.js';
 import formTransferRoutes from './forms/formTransfer.js';
 import formAnimalsRoutes from './forms/formAnimals.js';
+import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
 const router = express.Router();
@@ -24,6 +25,7 @@ router.use('/wheel', wheelRoutes);
 router.use('/forms', formWorldUaRoutes);
 router.use('/forms', formTransferRoutes);
 router.use('/forms', formAnimalsRoutes);
+router.use('/test', testGoogle);
 // router.use('/google', googleReviewsRoutes);
 // router.use('/', googleAuthRouter);
 // Добавляем маршрут для колеса

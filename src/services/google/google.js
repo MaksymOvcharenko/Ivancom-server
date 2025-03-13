@@ -16,7 +16,11 @@ export const authenticate = async () => {
   const keyFilePath = path.join('/etc/secrets', 'google_file.json'); // Встановлюємо шлях до ключа Render
   const auth = new google.auth.GoogleAuth({
     keyFile: keyFilePath, // Використовуємо абсолютний шлях
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'], // Скопи для доступу
+    scopes: [
+      'https://www.googleapis.com/auth/spreadsheets',
+      'https://www.googleapis.com/auth/drive', // Повний доступ до Google Drive
+      'https://www.googleapis.com/auth/drive.file',
+    ], // Скопи для доступу
   });
 
   return await auth.getClient();
@@ -61,11 +65,13 @@ export const appendData = async (spreadsheetId, range, values) => {
   }
 };
 
-
 export const getData = async (spreadsheetId, range) => {
   const authClient = await authenticate();
   const sheets = google.sheets({ version: 'v4', auth: authClient });
-  const response = await sheets.spreadsheets.values.get({ spreadsheetId, range });
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range,
+  });
   return response.data.values || [];
 };
 export const updateRow = async (spreadsheetId, range, values) => {
