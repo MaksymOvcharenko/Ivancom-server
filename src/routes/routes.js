@@ -7,6 +7,8 @@ import shipmentsRoutes from './shipments.js';
 import packageGeneratorRoutes from './packageGenerator.js';
 import wheelRoutes from './wheel.js';
 import formWorldUaRoutes from './forms/formWorldUa.js';
+import formTransferRoutes from './forms/formTransfer.js';
+import formAnimalsRoutes from './forms/formAnimals.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
 const router = express.Router();
@@ -20,6 +22,8 @@ router.use('/shipments', shipmentsRoutes);
 router.use('/generate-package', packageGeneratorRoutes);
 router.use('/wheel', wheelRoutes);
 router.use('/forms', formWorldUaRoutes);
+router.use('/forms', formTransferRoutes);
+router.use('/forms', formAnimalsRoutes);
 // router.use('/google', googleReviewsRoutes);
 // router.use('/', googleAuthRouter);
 // Добавляем маршрут для колеса
