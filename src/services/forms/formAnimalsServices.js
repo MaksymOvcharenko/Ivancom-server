@@ -56,6 +56,7 @@
 //   }
 // };
 import { google } from 'googleapis';
+import { Readable } from 'node:stream';
 
 import Animals from '../../db/models/forms/formAnimals.js';
 import { writeFormDataAnimals } from '../google/sendAnimals.js';
@@ -79,15 +80,17 @@ export const formAnimalsServices = async (formData, files) => {
     const fileArray = files.file || []; // Якщо файли є, використовуємо їх, якщо ні — порожній масив
 
     // Тепер можна ітерувати по масиву fileArray
+
     for (const file of fileArray) {
       const fileMetadata = {
         name: file.originalname,
-        parents: ['1iPLycEpJjetwXNDMAG-2iOJMAFGE5IlO'], // Вкажи ID папки на Google Drive
+        parents: ['1iPLycEpJjetwXNDMAG-2iOJMAFGE5IlO'], // ID папки на Google Drive
       };
 
+      const fileBuffer = file.stream(); // Створюємо потік
       const media = {
         mimeType: file.mimetype,
-        body: file.buffer,
+        body: Readable.from(fileBuffer), // Перетворюємо буфер на потік
       };
 
       try {

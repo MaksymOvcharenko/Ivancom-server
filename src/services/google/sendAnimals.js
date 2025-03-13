@@ -1,7 +1,7 @@
 import { appendData, getHeaders } from './google.js';
 
 const spreadsheetId = '1zAnszt7CJeVukTGY4uaMD-zzz9ZMh4KOesAcwZOGAnw'; // ID вашої таблиці
-const range = 'Sheet1!A1:O1'; // Діапазон, в якому знаходяться заголовки
+const range = 'Sheet1!A1:Z1'; // Діапазон, в якому знаходяться заголовки
 
 export const writeFormDataAnimals = async (data) => {
   try {
@@ -11,37 +11,37 @@ export const writeFormDataAnimals = async (data) => {
     // Преобразуємо дані в масив значень, які відповідають заголовкам
     const values = headers.map((header) => {
       switch (header) {
-        case 'id':
+        case 'ID':
           return data.id || '';
-        case 'poroda':
+        case 'Poroda':
           return data.poroda || '';
-        case 'weightAnimals':
+        case 'WeightAnimals':
           return data.weightAnimals || '';
-        case 'typeAnimals':
+        case 'TypeAnimals':
           return data.typeAnimals || '';
-        case 'agreement':
+        case 'Agreement':
           return data.agreement || '';
-        case 'for':
+        case 'For':
           return data.for || '';
-        case 'from':
+        case 'From':
           return data.from || '';
-        case 'sendDate':
+        case 'SendDate':
           return data.sendDate || '';
-        case 'hidePhone':
+        case 'HidePhone':
           return data.hidePhone || '';
-        case 'senderPhone':
+        case 'SenderPhone':
           return data.senderPhone || '';
-        case 'senderEmail':
+        case 'SenderEmail':
           return data.senderEmail || '';
-        case 'senderSurname':
+        case 'SenderSurname':
           return data.senderSurname || '';
-        case 'senderName':
+        case 'SenderName':
           return data.senderName || '';
-        case 'fileLinks':
+        case 'FileLinks':
           return data.fileLinks.join(', ') || ''; // Якщо кілька лінків, об'єднуємо їх
-        case 'createdAt':
+        case 'CreatedAt':
           return data.createdAt || '';
-        case 'updatedAt':
+        case 'UpdatedAt':
           return data.updatedAt || '';
         default:
           return ''; // Пусте значення, якщо немає відповідного поля
