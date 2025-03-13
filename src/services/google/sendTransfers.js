@@ -41,7 +41,7 @@ export const writeFormDataTransfers = async (data) => {
     });
 
     // Записуємо дані в таблицю
-    await appendData(spreadsheetId, 'Sheet1!A4', [values]);
+    await appendData(spreadsheetId, 'Sheet1!A4', values);
   } catch (error) {
     console.error('Помилка при записі даних:', error);
   }
