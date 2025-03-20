@@ -10,9 +10,9 @@ import formWorldUaRoutes from './forms/formWorldUa.js';
 import formTransferRoutes from './forms/formTransfer.js';
 import formAnimalsRoutes from './forms/formAnimals.js';
 import formUaToWorldRoutes from './forms/formUatoWorld.js';
-import testGoogle from './test.js';
-import googleReviewsRoutes from './googleReviewsRoutes.js';
-import googleAuthRouter from './googleToken.js';
+// import testGoogle from './test.js';
+// import googleReviewsRoutes from './googleReviewsRoutes.js';
+// import googleAuthRouter from './googleToken.js';
 const router = express.Router();
 
 // Підключення кожного роута
@@ -27,9 +27,11 @@ router.use('/forms', formWorldUaRoutes);
 router.use('/forms', formUaToWorldRoutes);
 router.use('/forms', formTransferRoutes);
 router.use('/forms', formAnimalsRoutes);
-router.use('/test', testGoogle);
-router.use('/google', googleReviewsRoutes);
-router.use('/', googleAuthRouter);
+
+// router.use('/test', testGoogle);
+// router.use('/google', googleReviewsRoutes);
+// router.use('/', googleAuthRouter);
+
 // Добавляем маршрут для колеса
 // Інші групи роутів можна додати тут
 // router.use('/example', exampleRoutes);
