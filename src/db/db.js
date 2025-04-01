@@ -15,7 +15,7 @@ export default sequelize;
 
 export const sequelizeTracking = new Sequelize({
   host: process.env.DB_HOST_TRACKING,
-  dialect: 'postgres',
+  dialect: 'mysql',
   username: process.env.DB_USER_TRACKING,
   password: process.env.DB_PASSWORD_TRACKING,
   database: process.env.DB_DATABASE_TRACKING,

@@ -10,6 +10,7 @@ import formWorldUaRoutes from './forms/formWorldUa.js';
 import formTransferRoutes from './forms/formTransfer.js';
 import formAnimalsRoutes from './forms/formAnimals.js';
 import formUaToWorldRoutes from './forms/formUatoWorld.js';
+import trackingRoutes from './tracking.js';
 // import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
@@ -27,7 +28,7 @@ router.use('/forms', formWorldUaRoutes);
 router.use('/forms', formUaToWorldRoutes);
 router.use('/forms', formTransferRoutes);
 router.use('/forms', formAnimalsRoutes);
-
+router.use('/tracking', trackingRoutes);
 // router.use('/test', testGoogle);
 // router.use('/google', googleReviewsRoutes);
 // router.use('/', googleAuthRouter);
