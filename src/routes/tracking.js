@@ -4,6 +4,6 @@ import { trackingController } from '../controllers/tracking.controller.js';
 const router = Router();
 
 // Принятие TTН и обработка
-router.get('/', trackingController);
+router.post('/', trackingController);
 
 export default router;
