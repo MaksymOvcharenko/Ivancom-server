@@ -59,6 +59,7 @@ export const createShipment = async (req, res) => {
       weightActuality = weightActual;
       // Розрахунок об'ємної ваги
       weightDimensional = (length * width * height) / 4000;
+      weightDimensional = weightActuality;
       console.log(weightDimensional);
       // Стандартний коефіцієнт для переводу в кг
     } else {
