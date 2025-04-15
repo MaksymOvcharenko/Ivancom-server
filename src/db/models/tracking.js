@@ -63,6 +63,14 @@ export const Tracking = sequelizeTracking.define(
       type: DataTypes.STRING(30),
       allowNull: false,
     },
+    Country: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+    },
+    Address: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+    },
   },
   {
     tableName: 'ttnout', // строго как в базе
