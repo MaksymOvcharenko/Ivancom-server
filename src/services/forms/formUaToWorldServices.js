@@ -68,7 +68,7 @@ const determineDeliveryOptionAndBranch = (formData) => {
 
   const branchCities = {
     BranchKrakow: { deliveryOption: 'branch', branch: 'Krakow' },
-    BranchWarzsawa: { deliveryOption: 'branch', branch: 'Warzsawa' },
+    BranchWarzsawa: { deliveryOption: 'branch', branch: 'Warsaw' },
     BranchWroclaw: { deliveryOption: 'branch', branch: 'Wroclaw' },
     BranchKatowice: { deliveryOption: 'branch', branch: 'Katowice' },
   };
