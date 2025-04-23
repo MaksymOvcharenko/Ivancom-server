@@ -63,8 +63,46 @@ import axios from 'axios';
 import UaToWorld from '../../db/models/forms/formUaToWorld.js';
 
 // Функція для визначення deliveryOption та branch
+// const determineDeliveryOptionAndBranch = (formData) => {
+//   const { selectedSubCity, deliveryMethod } = formData;
+
+//   const branchCities = {
+//     BranchKrakow: { deliveryOption: 'branch', branch: 'Krakow' },
+//     BranchWarzsawa: { deliveryOption: 'branch', branch: 'Warsaw' },
+//     BranchWroclaw: { deliveryOption: 'branch', branch: 'Wroclaw' },
+//     BranchKatowice: { deliveryOption: 'branch', branch: 'Katowice' },
+//   };
+
+//   let modifiedDeliveryMethod = deliveryMethod;
+
+//   if (deliveryMethod === 'InPost') {
+//     modifiedDeliveryMethod = 'inpost';
+//   } else if (deliveryMethod === 'Courier Ivancom') {
+//     modifiedDeliveryMethod = 'ivancom-courier';
+//   }
+
+//   if (selectedSubCity) {
+//     return { deliveryOption: 'ivancom-courier', branch: selectedSubCity };
+//   }
+
+//   if (branchCities[deliveryMethod]) {
+//     return {
+//       deliveryOption: branchCities[deliveryMethod].deliveryOption,
+//       branch: branchCities[deliveryMethod].branch,
+//     };
+//   }
+
+//   return { deliveryOption: modifiedDeliveryMethod, branch: 'Krakow' };
+// };
 const determineDeliveryOptionAndBranch = (formData) => {
-  const { selectedSubCity, deliveryMethod } = formData;
+  const { selectedSubCity, deliveryMethod, city } = formData;
+
+  const cityToBranch = {
+    Kraków: 'Krakow',
+    Warszawa: 'Warsaw',
+    Wrocław: 'Wroclaw',
+    Katowice: 'Katowice',
+  };
 
   const branchCities = {
     BranchKrakow: { deliveryOption: 'branch', branch: 'Krakow' },
@@ -81,10 +119,20 @@ const determineDeliveryOptionAndBranch = (formData) => {
     modifiedDeliveryMethod = 'ivancom-courier';
   }
 
+  // Якщо доставка кур'єром і є місто
+  if (deliveryMethod === 'Courier Ivancom' && city && cityToBranch[city]) {
+    return {
+      deliveryOption: 'ivancom-courier',
+      branch: cityToBranch[city],
+    };
+  }
+
+  // Якщо є вибране підмісто — залишаємо як fallback
   if (selectedSubCity) {
     return { deliveryOption: 'ivancom-courier', branch: selectedSubCity };
   }
 
+  // Якщо відповідність у branchCities
   if (branchCities[deliveryMethod]) {
     return {
       deliveryOption: branchCities[deliveryMethod].deliveryOption,
@@ -92,6 +140,7 @@ const determineDeliveryOptionAndBranch = (formData) => {
     };
   }
 
+  // Дефолтне значення
   return { deliveryOption: modifiedDeliveryMethod, branch: 'Krakow' };
 };
 
