@@ -182,6 +182,7 @@ const formUaWorldServices = async (formData) => {
       description,
       agree,
       promocode,
+      cold,
     } = formData;
 
     // Отримуємо deliveryOption та branch
@@ -215,6 +216,7 @@ const formUaWorldServices = async (formData) => {
       dataConsent: agree ? 1 : 0,
       rateFromPLNtoUAH,
       promoCode: promocode,
+      holod: cold ? 1 : 0,
     });
 
     return newEntry;

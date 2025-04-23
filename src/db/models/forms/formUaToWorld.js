@@ -102,6 +102,14 @@ const UaToWorld = sequelizeDB1C.define(
       allowNull: false,
       defaultValue: false,
     },
+    holod: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0, // або 1, якщо за замовчуванням включено
+      validate: {
+        isIn: [[0, 1]], // дозволяє тільки 0 або 1
+      },
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
