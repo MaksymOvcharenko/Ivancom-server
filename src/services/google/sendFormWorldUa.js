@@ -50,7 +50,7 @@ export const writeFormDataWorldUa = async (data) => {
         case 'currency':
           return data.currency || '';
         case 'currencypay':
-          return data.currencypay || '';
+          return data.currencypay || 'тест';
         case 'npDepartment':
           return data.npDepartment || '';
         case 'city':
@@ -58,7 +58,7 @@ export const writeFormDataWorldUa = async (data) => {
         case 'region':
           return data.region || '';
         default:
-          return ''; // Пусте значення, якщо немає відповідного поля
+          return '';
       }
     });
 
