@@ -7,7 +7,8 @@ export const writeFormDataWorldUa = async (data) => {
   try {
     // Отримуємо заголовки з Google Sheets
     const headers = await getHeaders(spreadsheetId, range);
-
+    console.log('Отримані заголовки:', headers);
+    // Перевіряємо, чи заголовки отримані успішно
     // Преобразуємо дані в масив значень, які відповідають заголовкам
     const values = headers.map((header) => {
       switch (header) {
