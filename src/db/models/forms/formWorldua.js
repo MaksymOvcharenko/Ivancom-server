@@ -12,6 +12,7 @@ const FormWorldua = sequelize.define(
     agreement: { type: DataTypes.BOOLEAN, allowNull: false },
     promoCode: { type: DataTypes.STRING, field: 'promo_code' },
     currency: { type: DataTypes.STRING, allowNull: false },
+    currencypay: { type: DataTypes.STRING, allowNull: false },
     npDepartment: { type: DataTypes.STRING, field: 'np_department' },
     city: { type: DataTypes.STRING, allowNull: false },
     region: { type: DataTypes.STRING, allowNull: false },

@@ -49,6 +49,8 @@ export const writeFormDataWorldUa = async (data) => {
           return data.promoCode || '';
         case 'currency':
           return data.currency || '';
+        case 'currencypay':
+          return data.currencypay || '';
         case 'npDepartment':
           return data.npDepartment || '';
         case 'city':
