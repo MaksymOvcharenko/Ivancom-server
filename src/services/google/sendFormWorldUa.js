@@ -49,14 +49,15 @@ export const writeFormDataWorldUa = async (data) => {
           return data.promoCode || '';
         case 'currency':
           return data.currency || '';
-        case 'currencypay':
-          return data.currencypay || 'тест';
+
         case 'npDepartment':
           return data.npDepartment || '';
         case 'city':
           return data.city || '';
         case 'region':
           return data.region || '';
+        case 'pay':
+          return data.currencypay || 'тест';
         default:
           return '';
       }
