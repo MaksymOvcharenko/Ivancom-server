@@ -67,7 +67,7 @@ const sendEmail = async ({
       <strong>Опис відправлення:</strong> ${parcelDescription}<br>
       <strong>Промокод:</strong> ${promoCode || 'Не вказано'}<br>
       <strong>Країна:</strong> ${country}<br>
-      <strong>Плата за курс (PLN до UAH):</strong> ${rateFromPLNtoUAH}<br>
+      
   </p>
   <p>Дякуємо Вам, що обрали нашу поштову службу!</p>
   <p>З повагою, команда IVANCOM.<br>
