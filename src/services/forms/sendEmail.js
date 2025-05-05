@@ -25,6 +25,7 @@ const sendEmail = async ({
   dataConsent,
   rateFromPLNtoUAH,
   promoCode,
+  holod,
 }) => {
   const toName =
     payer === 'recipient'
@@ -52,7 +53,9 @@ const sendEmail = async ({
       message += `<strong>Варіант доставки:</strong> Кур'єр Inpost<br>`;
     }
   }
-
+  if (holod === 1) {
+    message += `<strong>Варіант доставки:</strong> Обрана доставка в холоді, доплата + 50 зл.<br>`;
+  }
   if (
     deliveryOption === 'ivancom-courier' ||
     deliveryOption === 'dhl' ||
