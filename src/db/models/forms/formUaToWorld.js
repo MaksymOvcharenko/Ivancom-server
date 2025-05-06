@@ -93,6 +93,10 @@ const UaToWorld = sequelizeDB1C.define(
       type: DataTypes.STRING(50),
       allowNull: true,
     },
+    house: {
+      type: DataTypes.STRING(6),
+      allowNull: true,
+    },
     rateFromPLNtoUAH: {
       type: DataTypes.STRING(50),
       allowNull: false,
