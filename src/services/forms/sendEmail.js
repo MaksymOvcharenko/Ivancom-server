@@ -77,17 +77,27 @@ const sendEmail = async ({
   <a href='https://ivancom.eu/'>https://ivancom.eu/</a></p>
 `;
 
+  // const transporter = nodemailer.createTransport({
+  //   service: 'gmail',
+  //   auth: {
+  //     user: process.env.NODE_MAILER_SMPT_USER,
+  //     pass: process.env.NODE_MAILER_SMPT_PASSWORD,
+  //   },
+  // }); // гмайл
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'ssl0.ovh.net',
+    port: 465,
+    secure: true, // SSL/TLS
     auth: {
-      user: process.env.NODE_MAILER_SMPT_USER,
-      pass: process.env.NODE_MAILER_SMPT_PASSWORD,
+      user: 'office@ivancom.eu',
+      pass: 'IvankomSuper2025@1', // або той пароль, що точно працює
     },
-  });
+  }); // оvh
 
   try {
     await transporter.sendMail({
-      from: 'ivancom.krakow@gmail.com',
+      // from: 'ivancom.krakow@gmail.com',// гмаил
+      from: 'IVANCOM <office@ivancom.eu>', // оvh
       to: toEmail,
       subject: `Заявка відправки посилки №${ttn}`,
       html: message,
