@@ -100,6 +100,7 @@ const determineDeliveryOptionAndBranch = (formData) => {
   const cityToBranch = {
     Kraków: 'Krakow',
     Warszawa: 'Warsaw',
+    Warsaw: 'Warsaw',
     Wrocław: 'Wroclaw',
     Katowice: 'Katowice',
     Kielce: 'Kielce',
