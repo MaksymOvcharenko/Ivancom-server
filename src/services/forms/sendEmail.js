@@ -26,6 +26,7 @@ const sendEmail = async ({
   rateFromPLNtoUAH,
   promoCode,
   holod,
+  house,
 }) => {
   const toName =
     payer === 'recipient'
@@ -61,7 +62,7 @@ const sendEmail = async ({
     deliveryOption === 'dhl' ||
     (deliveryOption === 'inpost' && !inpost_number)
   ) {
-    message += `<strong>Адреса доставки:</strong> ${administrativeAreaLevel1}, ${locality}, ${location}, ${apart}<br>`;
+    message += `<strong>Адреса доставки:</strong> ${administrativeAreaLevel1}, ${locality}, ${location},${house}/ ${apart}<br>`;
   }
 
   message += ` 
