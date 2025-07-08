@@ -46,7 +46,7 @@ export async function sendInpostRequest(
         <street>Medyka</street>
         <buldingNo>405A/buldingNo>
         <flatNo>83</flatNo>
-        <zipCode>37-732</zipCode>
+        <zipCode>31-982</zipCode>
         <town>Medyka</town>
       </address>
     </paczkomaty>
