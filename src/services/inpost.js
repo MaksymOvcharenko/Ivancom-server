@@ -1,8 +1,13 @@
-import { parseStringPromise } from "xml2js";
+import { parseStringPromise } from 'xml2js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export async function sendInpostRequest(numberShipment,crateType,senderPhone,senderEmail) {
+export async function sendInpostRequest(
+  numberShipment,
+  crateType,
+  senderPhone,
+  senderEmail,
+) {
   const url = process.env.INPOST_URL;
   function generateFutureDate(daysAhead = 14) {
     // Отримуємо поточну дату
@@ -23,7 +28,6 @@ export async function sendInpostRequest(numberShipment,crateType,senderPhone,sen
   // Викликаємо функцію для генерування дати на 14 днів наперед
   const futureDate = generateFutureDate(14);
 
-
   // XML-контент, який потрібно відправити
   const xmlContent = `
     <paczkomaty>
@@ -39,57 +43,51 @@ export async function sendInpostRequest(numberShipment,crateType,senderPhone,sen
         <name>Ivan</name>
         <surName>Kysil</surName>
         <email>ivancominpost@gmail.com</email>
-        <street>al. Jana Pawła II</street>
-        <buldingNo>154</buldingNo>
-        <flatNo>1</flatNo>
-        <zipCode>31-982</zipCode>
-        <town>Krakow</town>
+        <street>Medyka</street>
+        <buldingNo>405A/buldingNo>
+        <flatNo>83</flatNo>
+        <zipCode>37-732</zipCode>
+        <town>Medyka</town>
       </address>
     </paczkomaty>
   `;
 
   // Формат даних, які відправляються
   const formData = new URLSearchParams();
-  formData.append("email", process.env.INPOST_LOGIN);
-  formData.append("password", process.env.INPOST_PASSWORD);
-  formData.append("content", xmlContent);
+  formData.append('email', process.env.INPOST_LOGIN);
+  formData.append('password', process.env.INPOST_PASSWORD);
+  formData.append('content', xmlContent);
 
   try {
     // Відправляємо POST запит
     const response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded", // Формат для передачі даних
+        'Content-Type': 'application/x-www-form-urlencoded', // Формат для передачі даних
       },
       body: formData.toString(),
     });
-
 
     // Обробляємо відповідь
     if (response.ok) {
       const result = await response.text(); // Якщо відповідь у вигляді тексту
 
-
-
       // Якщо відповідь у форматі XML, то парсимо її
       try {
         const parsedXml = await parseStringPromise(result);
 
-
         // Приклад отримання значення коду з XML:
         const code = parsedXml?.paczkomaty?.return?.[0]?.code?.[0];
 
-
         return code;
       } catch (parseError) {
-        console.error("Помилка парсингу XML:", parseError.message);
+        console.error('Помилка парсингу XML:', parseError.message);
       }
-
     } else {
-      console.error("Помилка:", response.status, response.statusText);
+      console.error('Помилка:', response.status, response.statusText);
     }
   } catch (error) {
-    console.error("Помилка при відправці запиту:", error);
+    console.error('Помилка при відправці запиту:', error);
   }
 }
 

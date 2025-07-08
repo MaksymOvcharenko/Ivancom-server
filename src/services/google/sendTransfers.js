@@ -31,10 +31,14 @@ export const writeFormDataTransfers = async (data) => {
           return data.agreement || '';
         case 'sendDate':
           return data.sendDate || '';
+        case 'date':
+          return new Date().toISOString().slice(0, 16).replace('T', ' ');
+
         case 'createdAt':
           return data.createdAt || '';
         case 'updatedAt':
           return data.updatedAt || '';
+
         default:
           return ''; // Пусте значення, якщо немає відповідного поля
       }
