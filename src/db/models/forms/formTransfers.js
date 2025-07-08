@@ -48,6 +48,11 @@ const Transfers = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    telegramNick: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      field: 'telegramnick',
+    },
     sendDate: {
       type: DataTypes.DATE,
       allowNull: false,

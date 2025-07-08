@@ -33,7 +33,8 @@ export const writeFormDataTransfers = async (data) => {
           return data.sendDate || '';
         case 'date':
           return new Date().toISOString().slice(0, 16).replace('T', ' ');
-
+        case 'telegramNick':
+          return data.telegramNick || '';
         case 'createdAt':
           return data.createdAt || '';
         case 'updatedAt':
