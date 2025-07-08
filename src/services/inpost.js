@@ -43,11 +43,11 @@ export async function sendInpostRequest(
         <name>Ivan</name>
         <surName>Kysil</surName>
         <email>ivancominpost@gmail.com</email>
-        <street>Medyka</street>
-        <buldingNo>405A/buldingNo>
-        <flatNo>83</flatNo>
+        <street>al. Jana Pawła II</street>
+        <buldingNo>154</buldingNo>
+        <flatNo>1</flatNo>
         <zipCode>31-982</zipCode>
-        <town>Medyka</town>
+        <town>Krakow</town>
       </address>
     </paczkomaty>
   `;
@@ -75,7 +75,7 @@ export async function sendInpostRequest(
       // Якщо відповідь у форматі XML, то парсимо її
       try {
         const parsedXml = await parseStringPromise(result);
-
+        console.log('Розібраний XML:', parsedXml);
         // Приклад отримання значення коду з XML:
         const code = parsedXml?.paczkomaty?.return?.[0]?.code?.[0];
 
