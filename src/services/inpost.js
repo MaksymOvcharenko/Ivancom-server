@@ -43,11 +43,11 @@ export async function sendInpostRequest(
         <name>Ivan</name>
         <surName>Kysil</surName>
         <email>ivancominpost@gmail.com</email>
-        <street>al. Jana Pawła II</street>
-        <buldingNo>154</buldingNo>
+        <street>MEDYKA</street>
+        <buldingNo>405A/83</buldingNo>
         <flatNo>1</flatNo>
-        <zipCode>31-982</zipCode>
-        <town>Krakow</town>
+        <zipCode>37-732</zipCode>
+        <town>MEDYKA</town>
       </address>
     </paczkomaty>
   `;
