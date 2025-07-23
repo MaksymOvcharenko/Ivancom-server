@@ -45,6 +45,11 @@ const UaToWorld = sequelizeDB1C.define(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
+    NameCompany: {
+      type: DataTypes.STRING(300),
+      allowNull: true,
+    },
+
     deliveryOption: {
       type: DataTypes.ENUM('branch', 'ivancom-courier', 'inpost', 'dhl'),
       allowNull: false,
