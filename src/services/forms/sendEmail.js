@@ -331,6 +331,7 @@ const sendEmail = async (props) => {
     promoCode,
     holod,
     house,
+    companyName,
   } = props;
 
   const toName =
@@ -375,6 +376,11 @@ const sendEmail = async (props) => {
   messageContent += `
       <strong>Отримувач:</strong> ${recipientFirstName} ${recipientLastName}<br>
       <strong>Телефон отримувача:</strong> <a href='tel:${recipientPhone}'>${recipientPhone}</a><br>
+       ${
+         companyName
+           ? `<strong>Компанія отримувача:</strong> ${companyName}<br>`
+           : ''
+       }
       <strong>Опис відправлення:</strong> ${parcelDescription}<br>
       <strong>Промокод:</strong> ${promoCode || 'Не вказано'}<br>
       <strong>Країна:</strong> ${country}<br>
