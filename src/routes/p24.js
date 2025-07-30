@@ -1,20 +1,15 @@
-// routes/p24.js
 import express from 'express';
 import crypto from 'crypto';
-
 const router = express.Router();
 
-// P24 Webhook для підтвердження транзакції
-router.post('/status', express.json(), async (req, res) => {
-  const body = req.body;
-  console.log('📩 P24 webhook received:', body);
+router.post('/p24/status', express.json(), (req, res) => {
+  console.log('📩 P24 webhook received:', req.body);
 
-  const { sessionId, orderId, amount, currency, sign } = body;
+  const { sessionId, orderId, amount, currency, sign } = req.body;
 
-  //   const merchantId = 320208;
   const crc = 'a71343a7b69fea5b';
 
-  const verifyPayload = {
+  const expectedPayload = {
     sessionId,
     orderId: Number(orderId),
     amount: Number(amount),
@@ -24,20 +19,18 @@ router.post('/status', express.json(), async (req, res) => {
 
   const expectedSign = crypto
     .createHash('sha384')
-    .update(JSON.stringify(verifyPayload), 'utf8')
+    .update(JSON.stringify(expectedPayload), 'utf8')
     .digest('hex');
 
   if (expectedSign !== sign) {
-    console.warn('❌ Sign mismatch!');
-    return res.status(400).json({ error: 'Invalid sign' });
+    console.log('❌ Sign mismatch!');
+    return res.status(400).json({ error: 'Invalid signature' });
   }
 
-  // ✅ Платіж підтверджено
-  console.log('✅ Оплата успішна для сесії:', sessionId);
+  console.log('✅ Valid signature! Payment confirmed.');
 
-  // 💾 Тут можеш оновити статус оплати в БД, якщо треба
-
-  res.status(200).json({ status: 'OK' });
+  // Тут ти можеш далі зберегти оплату в БД або оновити статус
+  return res.status(200).json({ status: 'OK' });
 });
 
 export default router;
