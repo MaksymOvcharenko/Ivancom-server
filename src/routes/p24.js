@@ -54,7 +54,7 @@ router.post('/status', express.json(), async (req, res) => {
     const data = response.data;
     console.log('✅ VERIFY response from P24:', data);
 
-    if (data.status === 'success') {
+    if (data.data.status === 'success') {
       // 💾 Можеш тут зберегти в БД
       console.log('💰 Payment VERIFIED & SUCCESS!');
       return res.status(200).json({ status: 'OK' });
