@@ -33,7 +33,7 @@ router.post('/status', express.json(), async (req, res) => {
 
   // 📤 Запит до Przelewy24 на верифікацію
   try {
-    const response = await axios.post(
+    const response = await axios.put(
       'https://secure.przelewy24.pl/api/v1/transaction/verify',
       {
         sessionId,
