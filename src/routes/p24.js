@@ -2,7 +2,7 @@ import express from 'express';
 import crypto from 'crypto';
 const router = express.Router();
 
-router.post('/p24/status', express.json(), (req, res) => {
+router.post('/status', express.json(), (req, res) => {
   console.log('📩 P24 webhook received:\n', JSON.stringify(req.body, null, 2));
 
   const { sessionId, orderId, amount, currency, sign } = req.body;
