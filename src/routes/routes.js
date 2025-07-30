@@ -12,6 +12,7 @@ import formAnimalsRoutes from './forms/formAnimals.js';
 import formUaToWorldRoutes from './forms/formUatoWorld.js';
 import trackingRoutes from './tracking.js';
 import parcelClaimRoutes from './parcelClaimRoutes.js';
+import p24Routes from './p24.js'; // додаємо
 // import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
@@ -31,6 +32,7 @@ router.use('/forms', formTransferRoutes);
 router.use('/forms', formAnimalsRoutes);
 router.use('/tracking', trackingRoutes);
 router.use('/parcel-claim', parcelClaimRoutes);
+router.use('/p24', p24Routes); // додаємо
 // router.use('/test', testGoogle);
 // router.use('/google', googleReviewsRoutes);
 // router.use('/', googleAuthRouter);
