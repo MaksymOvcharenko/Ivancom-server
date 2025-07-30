@@ -20,7 +20,7 @@ router.post('/status', express.json(), (req, res) => {
   // Обчислення підпису
   const expectedSign = crypto
     .createHash('sha384')
-    .update(JSON.stringify(expectedPayload), 'utf8')
+    .update(JSON.stringify(expectedPayload))
     .digest('hex');
 
   // 🔍 Логування всього для перевірки через калькулятор
