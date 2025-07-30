@@ -37,6 +37,7 @@ router.post('/status', express.json(), async (req, res) => {
       'https://secure.przelewy24.pl/api/v1/transaction/verify',
       {
         sessionId,
+        posId: merchantId,
         orderId,
         amount,
         currency,
