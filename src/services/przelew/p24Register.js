@@ -6,5 +6,5 @@ registerTransaction({
   description: 'Тестова оплата Ivankom',
   email: 'client@example.com',
   urlReturn: 'https://ivancom.eu',
-  urlStatus: 'https://ivancom-server.onrender.com/api/p24/status',
+  urlStatus: 'https://ivancom-server.onrender.com/p24/status',
 });
