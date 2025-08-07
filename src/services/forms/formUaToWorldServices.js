@@ -130,7 +130,7 @@ const determineDeliveryOptionAndBranch = (formData) => {
   }
 
   // Якщо є вибране підмісто — залишаємо як fallback
-  if (selectedSubCity) {
+  if (deliveryMethod === 'Courier Ivancom' && selectedSubCity) {
     return { deliveryOption: 'ivancom-courier', branch: selectedSubCity };
   }
 
