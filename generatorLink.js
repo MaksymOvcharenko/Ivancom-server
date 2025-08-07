@@ -101,7 +101,7 @@ export async function loginAndFillForm(
 
     console.log('Виконую авторизацію...');
     await page.type('#lo_login', '320208');
-    await page.type('#lo_haslo', 'Ivancomparcels@20251');
+    await page.type('#lo_haslo', 'ParcelsIvancom2025');
     await Promise.all([
       page.click('#loginButton'),
       page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 }),
