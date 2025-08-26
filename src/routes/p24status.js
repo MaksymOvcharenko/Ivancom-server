@@ -112,87 +112,81 @@ async function verifyP24(body) {
  * або
  * https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=123&status=1&dummy=extra&provider=mono
  */
-router.all(
-  '/shipments/update-payment-status',
-  express.json(),
-  async (req, res) => {
-    const { shipmentId, status, provider } = req.query;
-    console.log('🔔 Incoming payment webhook:', {
-      provider,
-      shipmentId,
-      status,
-      method: req.method,
-    });
-    // P24/Mono зазвичай шлють POST; але дозволимо і GET для дебагу
-    const isRedirectWanted = String(req.query.redirect || '') === '1';
+router.all('/update-payment-status', express.json(), async (req, res) => {
+  const { shipmentId, status, provider } = req.query;
+  console.log('🔔 Incoming payment webhook:', {
+    provider,
+    shipmentId,
+    status,
+    method: req.method,
+  });
+  // P24/Mono зазвичай шлють POST; але дозволимо і GET для дебагу
+  const isRedirectWanted = String(req.query.redirect || '') === '1';
 
-    if (!shipmentId || !provider) {
-      return res
-        .status(400)
-        .json({ error: "shipmentId і provider обов'язкові" });
-    }
+  if (!shipmentId || !provider) {
+    return res.status(400).json({ error: "shipmentId і provider обов'язкові" });
+  }
 
-    try {
-      if (provider === 'p24') {
-        // 1) ВЕРИФІКАЦІЯ P24
-        console.log(
-          '📦 P24 webhook body:',
-          JSON.stringify(req.body || {}, null, 2),
-        );
-        const verified = await verifyP24(req.body || {});
-        if (!verified.ok) {
-          console.log('⚠️ P24 verification failed');
-          return res.status(400).json({ error: 'P24 verification failed' });
-        }
-
-        // 2) ОНОВЛЕННЯ СТАТУСУ
-        const redirectUrl = await applyPaymentSuccess(shipmentId, {
-          provider: 'p24',
-          orderId: req.body?.orderId,
-          amount: req.body?.amount,
-          currency: req.body?.currency,
-          methodId: req.body?.methodId,
-          statement: req.body?.statement,
-        });
-
-        if (isRedirectWanted) return res.redirect(302, redirectUrl);
-        return res.status(200).json({ status: 'OK' });
-      }
-
-      if (provider === 'mono') {
-        // ⚠️ Як і просив: без верифікації — одразу проставляємо статус
-        // Мапимо truthy статуси
-        const isSuccess = ['1', 'true', 'success', 'paid', 'ok'].includes(
-          String(status).toLowerCase(),
-        );
-        if (!isSuccess) {
-          // Якщо хочеш фіксувати невдачу — тут можна оновити БД/Sheets іншим статусом
-          return res.status(400).json({ error: 'Mono status is not success' });
-        }
-
-        const redirectUrl = await applyPaymentSuccess(shipmentId, {
-          provider: 'mono',
-          // якщо з монобанку прилітають якісь дані в body — збережемо
-          orderId: req.body?.invoiceId || req.body?.orderId,
-          amount: req.body?.amount,
-          currency: req.body?.currency || 'UAH',
-          statement: req.body?.reference,
-        });
-
-        if (isRedirectWanted) return res.redirect(302, redirectUrl);
-        return res.status(200).json({ status: 'OK' });
-      }
-
-      return res.status(400).json({ error: 'Unknown provider' });
-    } catch (err) {
-      console.error(
-        '❌ Webhook handling error:',
-        err?.response?.data || err?.message || err,
+  try {
+    if (provider === 'p24') {
+      // 1) ВЕРИФІКАЦІЯ P24
+      console.log(
+        '📦 P24 webhook body:',
+        JSON.stringify(req.body || {}, null, 2),
       );
-      // За бажанням можна завжди відповідати 200, щоб провайдер не ретраїв
-      return res.status(500).json({ error: 'Server error' });
+      const verified = await verifyP24(req.body || {});
+      if (!verified.ok) {
+        console.log('⚠️ P24 verification failed');
+        return res.status(400).json({ error: 'P24 verification failed' });
+      }
+
+      // 2) ОНОВЛЕННЯ СТАТУСУ
+      const redirectUrl = await applyPaymentSuccess(shipmentId, {
+        provider: 'p24',
+        orderId: req.body?.orderId,
+        amount: req.body?.amount,
+        currency: req.body?.currency,
+        methodId: req.body?.methodId,
+        statement: req.body?.statement,
+      });
+
+      if (isRedirectWanted) return res.redirect(302, redirectUrl);
+      return res.status(200).json({ status: 'OK' });
     }
-  },
-);
+
+    if (provider === 'mono') {
+      // ⚠️ Як і просив: без верифікації — одразу проставляємо статус
+      // Мапимо truthy статуси
+      const isSuccess = ['1', 'true', 'success', 'paid', 'ok'].includes(
+        String(status).toLowerCase(),
+      );
+      if (!isSuccess) {
+        // Якщо хочеш фіксувати невдачу — тут можна оновити БД/Sheets іншим статусом
+        return res.status(400).json({ error: 'Mono status is not success' });
+      }
+
+      const redirectUrl = await applyPaymentSuccess(shipmentId, {
+        provider: 'mono',
+        // якщо з монобанку прилітають якісь дані в body — збережемо
+        orderId: req.body?.invoiceId || req.body?.orderId,
+        amount: req.body?.amount,
+        currency: req.body?.currency || 'UAH',
+        statement: req.body?.reference,
+      });
+
+      if (isRedirectWanted) return res.redirect(302, redirectUrl);
+      return res.status(200).json({ status: 'OK' });
+    }
+
+    return res.status(400).json({ error: 'Unknown provider' });
+  } catch (err) {
+    console.error(
+      '❌ Webhook handling error:',
+      err?.response?.data || err?.message || err,
+    );
+    // За бажанням можна завжди відповідати 200, щоб провайдер не ретраїв
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
 
 export default router;

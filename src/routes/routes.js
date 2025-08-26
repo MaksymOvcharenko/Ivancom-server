@@ -24,8 +24,9 @@ router.use('/parcels', parcelRoutes);
 router.use('/users', userRoutes);
 router.use('/address', addressRoutes);
 router.use('/payments', paymentsRoutes);
+router.use('/shipments', updatePaymentStatusNew);
 router.use('/shipments', shipmentsRoutes);
-router.use(updatePaymentStatusNew);
+
 // router.get('/shipments/update-payment-status', );
 router.use('/generate-package', packageGeneratorRoutes);
 router.use('/wheel', wheelRoutes);
