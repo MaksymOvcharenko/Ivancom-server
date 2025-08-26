@@ -6,9 +6,11 @@ import Payment from '../db/models/payments.js';
 import Shipment from '../db/models/shipments.js';
 import User from '../db/models/users.js';
 import { convertToUAH } from '../services/convertPlnToUah.js';
+import { convertPlnToUahWithFee } from '../services/currency.js';
 import { gabarytes } from '../services/gabarytes.js';
 import { writeData } from '../services/google/main.js';
 import { sendInpostRequest } from '../services/inpost.js';
+import { generateMonobankInvoice } from '../services/monopay.js';
 import {
   createContactPersonRef,
   CreateInternetDocumentAddress,
@@ -340,7 +342,7 @@ export const createShipment = async (req, res) => {
           amount: payment.amount,
           redirect_code: payment.redirect_code || '',
           confirmation: payment.confirmation || false,
-          method: payment.method || 'card',
+          method: payment.method || 'p24',
           npPrice: payment.npPrice || 0, // Встановлюється 0 за умовчанням, якщо не передано
           priceCargo: payment.priceCargo,
           valuation: payment.valuation,
@@ -420,14 +422,78 @@ export const createShipment = async (req, res) => {
     // // для Monobank
     // urlStatus: `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&dummy=extra&provider=mono`,
 
-    const paymentLink = await registerTransaction({
-      sessionId: String(newShipment.id),
-      amount: payment.amount * 100, // 12.34 PLN
-      description: `Zamowlennya ${newShipment.id}`,
-      email: sender.email,
-      urlReturn: `${FRONTEND_URL}?id=${newShipment.id}`,
-      urlStatus: `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&dummy=extra&provider=p24`,
-    });
+    // const paymentLink = await registerTransaction({
+    //   sessionId: String(newShipment.id),
+    //   amount: payment.amount * 100, // 12.34 PLN
+    //   description: `Zamowlennya ${newShipment.id}`,
+    //   email: sender.email,
+    //   urlReturn: `${FRONTEND_URL}?id=${newShipment.id}`,
+    //   urlStatus: `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&dummy=extra&provider=p24`,
+    // });
+
+    const method = String(payment.method || '').toLowerCase();
+    const urlStatusBase = `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&dummy=extra&provider=`;
+
+    let paymentLink;
+
+    // === вибір платіжки ===
+    if (method === 'p24' || method === 'przelewy24') {
+      // якщо ТВОЯ версія registerTransaction приймає ОБ’ЄКТ
+      paymentLink = await registerTransaction({
+        sessionId: String(newShipment.id),
+        amount: Math.round(payment.amount * 100), // grosz
+        description: `Zamowlenie ${newShipment.id}`,
+        email: sender.email,
+        urlReturn: `${FRONTEND_URL}?id=${newShipment.id}`,
+        urlStatus: `${urlStatusBase}p24`,
+      });
+
+      // // якщо у тебе позиційні аргументи — використовуй це замість блоку вище:
+      // paymentLink = await registerTransaction(
+      //   String(newShipment.id),
+      //   Math.round(payment.amount * 100),
+      //   sender.last_name || '',
+      //   sender.email,
+      //   sender.phone,
+      //   senderAddress.postal_code,
+      //   senderAddress.city,
+      //   senderAddress.street,
+      //   senderAddress.building_number,
+      //   { urlReturn: `${FRONTEND_URL}?id=${newShipment.id}`, urlStatus: `${urlStatusBase}p24` }
+      // );
+    } else if (method === 'mono' || method === 'monobank') {
+      // TODO: generateMonobankInvoice(...)
+      const { totalUah, totalKop } = await convertPlnToUahWithFee(
+        payment.amount,
+        6.5,
+      );
+      const { pageUrl } = await generateMonobankInvoice({
+        orderId: String(newShipment.id),
+        amountUAH: totalUah, // функція сама округлить всередині (робить *100 і Math.round)
+        reference: `Zamowlenie ${newShipment.id}`,
+        destination: 'Організація перевезень відправлення',
+        comment: 'Дякуємо за покупку!',
+        basketOrder: [
+          {
+            name: 'Організація перевезень відправлення',
+            qty: 1,
+            sum: totalKop, // позиції теж у копійках!
+            total: totalKop,
+            unit: 'шт.',
+            code: `IVK-${newShipment.id}`,
+          },
+        ],
+        redirectUrl: `${FRONTEND_URL}?id=${newShipment.id}`,
+        webHookUrl: `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&provider=mono`,
+        validitySec: 3600,
+        paymentType: 'debit',
+        ccy: 980, // UAH
+      });
+
+      paymentLink = pageUrl;
+    } else {
+      throw new Error(`Невідомий метод оплати: ${payment.method}`);
+    }
     // Додаємо код до об'єкта, який повертається у відповідь
     console.log('Посилання на оплату:', paymentLink);
     // Підтверджуємо транзакцію
