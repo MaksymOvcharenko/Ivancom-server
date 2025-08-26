@@ -2,10 +2,9 @@
 import express from 'express';
 import axios from 'axios';
 import crypto from 'crypto';
-
-import { Shipment } from '../models/Shipment.js';
-import { Payment } from '../models/Payment.js';
-import { updatePaymentStatusInGoogleSheets } from '../services/googleSheets.js';
+import Shipment from '../db/models/shipments.js';
+import Payment from '../db/models/payments.js';
+import { updatePaymentStatusInGoogleSheets } from '../services/google/main.js';
 
 const {
   FRONTEND_URL = 'https://package-ivancom.vercel.app/confirmation',

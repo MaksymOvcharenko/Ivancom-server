@@ -12,6 +12,7 @@ import formAnimalsRoutes from './forms/formAnimals.js';
 import formUaToWorldRoutes from './forms/formUatoWorld.js';
 import trackingRoutes from './tracking.js';
 import parcelClaimRoutes from './parcelClaimRoutes.js';
+import updatePaymentStatusNew from './p24status.js';
 import p24Routes from './p24.js'; // додаємо
 // import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
@@ -24,6 +25,7 @@ router.use('/users', userRoutes);
 router.use('/address', addressRoutes);
 router.use('/payments', paymentsRoutes);
 router.use('/shipments', shipmentsRoutes);
+router.get('/shipments/update-payment-status', updatePaymentStatusNew);
 router.use('/generate-package', packageGeneratorRoutes);
 router.use('/wheel', wheelRoutes);
 router.use('/forms', formWorldUaRoutes);
