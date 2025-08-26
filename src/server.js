@@ -7,7 +7,6 @@ import { env } from './utils/env.js';
 import dotenv from 'dotenv';
 import router from './routes/routes.js';
 
-
 const PORT = Number(env('PORT', '3000'));
 export const setupServer = () => {
   const app = express();
@@ -30,7 +29,6 @@ export const setupServer = () => {
   });
 
   app.use(router);
-
 
   app.use('*', (req, res, next) => {
     res.status(404).json({

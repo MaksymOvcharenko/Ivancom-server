@@ -1,7 +1,7 @@
 import { registerTransaction } from './registerTransaction.js';
 
 registerTransaction({
-  sessionId: '123',
+  sessionId: '124',
   amount: 123, // 12.34 PLN
   description: 'Тестова оплата Ivankom',
   email: 'client@example.com',

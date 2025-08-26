@@ -14,6 +14,7 @@ import {
   CreateInternetDocumentAddress,
   CreateInternetDocumentWarehouse,
 } from '../services/np.js';
+import { registerTransaction } from '../services/przelew/registerTransaction.js';
 
 export const createShipment = async (req, res) => {
   const t = await sequelize.transaction(); // Починаємо транзакцію
@@ -399,17 +400,34 @@ export const createShipment = async (req, res) => {
     console.log(sender);
     console.log(senderAddress);
 
-    const paymentLink = await loginAndFillForm(
-      newShipment.id,
-      payment.amount,
-      sender.last_name,
-      sender.email,
-      sender.phone,
-      senderAddress.postal_code,
-      senderAddress.city,
-      senderAddress.street,
-      senderAddress.building_number,
-    );
+    // const paymentLink = await loginAndFillForm(
+    //   newShipment.id,
+    //   payment.amount,
+    //   sender.last_name,
+    //   sender.email,
+    //   sender.phone,
+    //   senderAddress.postal_code,
+    //   senderAddress.city,
+    //   senderAddress.street,
+    //   senderAddress.building_number,
+    // );
+
+    const FRONTEND_URL = 'https://package-ivancom.vercel.app/confirmation';
+    console.log(newShipment.id);
+    // // для Przelewy24
+    // urlStatus: `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&dummy=extra&provider=p24`,
+
+    // // для Monobank
+    // urlStatus: `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&dummy=extra&provider=mono`,
+
+    const paymentLink = await registerTransaction({
+      sessionId: String(newShipment.id),
+      amount: payment.amount * 100, // 12.34 PLN
+      description: `Zamowlennya ${newShipment.id}`,
+      email: sender.email,
+      urlReturn: `${FRONTEND_URL}?id=${newShipment.id}`,
+      urlStatus: `https://ivancom-server.onrender.com/shipments/update-payment-status?shipmentId=${newShipment.id}&status=1&dummy=extra&provider=p24`,
+    });
     // Додаємо код до об'єкта, який повертається у відповідь
     console.log('Посилання на оплату:', paymentLink);
     // Підтверджуємо транзакцію
