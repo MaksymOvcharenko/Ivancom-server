@@ -364,6 +364,8 @@ router.all(
 
         const { invoiceId, status, amount, currency, ccy, reference } =
           req.body || {};
+        console.log('📦 Mono webhook body:', req.body);
+
         if (!invoiceId || !status) {
           return res.status(400).json({ error: 'Missing invoiceId or status' });
         }
