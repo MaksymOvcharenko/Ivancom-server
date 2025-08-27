@@ -197,6 +197,7 @@ import crypto from 'crypto';
 import Shipment from '../db/models/shipments.js';
 import Payment from '../db/models/payments.js';
 import { updatePaymentStatusInGoogleSheets } from '../services/google/main.js';
+import { processAndEmailMonobankReceipt } from '../utils/fiskalnycheck.js';
 
 const {
   FRONTEND_URL = 'https://package-ivancom.vercel.app/confirmation',
@@ -394,7 +395,10 @@ router.all(
           statement: reference,
           paidConfirmed: true,
         });
-
+        await processAndEmailMonobankReceipt({
+          shipmentId: shipmentId,
+          invoiceId: invoiceId,
+        });
         if (isRedirectWanted) return res.redirect(302, redirectUrl);
         return res.status(200).json({ status: 'OK' });
       }
