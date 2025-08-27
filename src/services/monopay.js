@@ -14,7 +14,7 @@ export async function generateMonobankInvoice({
   orderId,
   amountUAH,
   reference = `Order ${orderId}`,
-  destination = 'За організацію перевезення відправлень',
+  destination = 'Організація перевезення відправлень',
   comment = 'Дякуємо за оплату!',
   basketOrder = [],
   redirectUrl,

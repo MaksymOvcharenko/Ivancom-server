@@ -471,11 +471,11 @@ export const createShipment = async (req, res) => {
         orderId: String(newShipment.id),
         amountUAH: totalUah, // функція сама округлить всередині (робить *100 і Math.round)
         reference: `Zamowlenie ${newShipment.id}`,
-        destination: 'Організація перевезень відправлення',
+        destination: `Організація перевезення відправлень IVK-${newShipment.id}`,
         comment: 'Дякуємо за покупку!',
         basketOrder: [
           {
-            name: 'Організація перевезень відправлення',
+            name: `Організація перевезення відправлень IVK-${newShipment.id}`,
             qty: 1,
             sum: totalKop, // позиції теж у копійках!
             total: totalKop,
