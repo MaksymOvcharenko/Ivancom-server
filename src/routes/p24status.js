@@ -296,16 +296,16 @@ async function verifyP24(body) {
     raw: resp?.data,
   };
 }
-function verifyMonobankSignature(rawBodyBuf, xSignBase64, monoPubKeyBase64) {
-  if (!rawBodyBuf || !xSignBase64 || !monoPubKeyBase64) return false;
-  const verifier = crypto.createVerify('SHA256');
-  verifier.update(rawBodyBuf);
-  verifier.end();
-  return verifier.verify(
-    Buffer.from(monoPubKeyBase64, 'base64'),
-    Buffer.from(xSignBase64, 'base64'),
-  );
-}
+// function verifyMonobankSignature(rawBodyBuf, xSignBase64, monoPubKeyBase64) {
+//   if (!rawBodyBuf || !xSignBase64 || !monoPubKeyBase64) return false;
+//   const verifier = crypto.createVerify('SHA256');
+//   verifier.update(rawBodyBuf);
+//   verifier.end();
+//   return verifier.verify(
+//     Buffer.from(monoPubKeyBase64, 'base64'),
+//     Buffer.from(xSignBase64, 'base64'),
+//   );
+// }
 /**
  * Єдиний вебхук:
  * URL приклад (той, що ти формуєш як urlStatus):
@@ -315,15 +315,7 @@ function verifyMonobankSignature(rawBodyBuf, xSignBase64, monoPubKeyBase64) {
  */
 router.all(
   '/update-payment-status',
-  (req, res, next) => {
-    const hasMonoSignature = typeof req.headers['x-sign'] === 'string';
-    if (hasMonoSignature) {
-      // Monobank → raw buffer
-      return express.raw({ type: 'application/json' })(req, res, next);
-    }
-    // інші (P24) → JSON
-    return express.json()(req, res, next);
-  },
+  express.json(), // 👈 і для mono, і для p24 буде звичайний json
   async (req, res) => {
     const { shipmentId, status, provider } = req.query;
     console.log('🔔 Incoming payment webhook:', {
@@ -332,7 +324,7 @@ router.all(
       status,
       method: req.method,
     });
-    // P24/Mono зазвичай шлють POST; але дозволимо і GET для дебагу
+
     const isRedirectWanted = String(req.query.redirect || '') === '1';
 
     if (!shipmentId || !provider) {
@@ -344,10 +336,7 @@ router.all(
     try {
       if (provider === 'p24') {
         // 1) ВЕРИФІКАЦІЯ P24
-        console.log(
-          '📦 P24 webhook body:',
-          JSON.stringify(req.body || {}, null, 2),
-        );
+        console.log('📦 P24 webhook body:', req.body);
         const verified = await verifyP24(req.body || {});
         if (!verified.ok) {
           console.log('⚠️ P24 verification failed');
@@ -369,32 +358,12 @@ router.all(
       }
 
       if (provider === 'mono') {
-        // приймаємо тільки POST
         if (req.method !== 'POST') {
           return res.status(405).json({ error: 'Method Not Allowed' });
         }
 
-        // тут req.body — Buffer (бо вище ми підключили умовний raw-парсер)
-        const xSign = req.get('X-Sign');
-        const monoPubKeyBase64 = process.env.MONO_PUBKEY_BASE64;
-
-        const valid = verifyMonobankSignature(
-          req.body,
-          xSign,
-          monoPubKeyBase64,
-        );
-        if (!valid) return res.status(400).json({ error: 'Invalid signature' });
-
-        // парсимо лише після успішної перевірки підпису
-        let body;
-        try {
-          body = JSON.parse(req.body.toString('utf8'));
-        } catch {
-          return res.status(400).json({ error: 'Bad JSON' });
-        }
-
         const { invoiceId, status, amount, currency, ccy, reference } =
-          body || {};
+          req.body || {};
         if (!invoiceId || !status) {
           return res.status(400).json({ error: 'Missing invoiceId or status' });
         }
@@ -405,7 +374,15 @@ router.all(
             .json({ status: 'ignored', info: `mono status=${status}` });
         }
 
-        const normCurrency = currency || (ccy === 980 ? 'UAH' : undefined);
+        const normCurrency =
+          currency ||
+          (ccy === 980
+            ? 'UAH'
+            : ccy === 985
+            ? 'PLN'
+            : ccy === 978
+            ? 'EUR'
+            : undefined);
 
         const redirectUrl = await applyPaymentSuccess(String(shipmentId), {
           provider: 'mono',
@@ -413,7 +390,7 @@ router.all(
           amount,
           currency: normCurrency,
           statement: reference,
-          paidConfirmed: true, // невеликий дод. захист у applyPaymentSuccess
+          paidConfirmed: true,
         });
 
         if (isRedirectWanted) return res.redirect(302, redirectUrl);
@@ -426,7 +403,6 @@ router.all(
         '❌ Webhook handling error:',
         err?.response?.data || err?.message || err,
       );
-      // За бажанням можна завжди відповідати 200, щоб провайдер не ретраїв
       return res.status(500).json({ error: 'Server error' });
     }
   },
