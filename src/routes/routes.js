@@ -16,6 +16,7 @@ import updatePaymentStatusNew from './p24status.js';
 import p24Routes from './p24.js';
 import businessClientRoutes from './bussines/businessClient.routes.js';
 import authRoutes from './bussines/auth.routes.js';
+import emailRoutes from './email.route.js';
 // import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
@@ -40,7 +41,10 @@ router.use('/tracking', trackingRoutes);
 router.use('/parcel-claim', parcelClaimRoutes);
 router.use('/p24', p24Routes);
 router.use('/api/business-client', businessClientRoutes);
-router.use('/api/auth', authRoutes); // додаємо
+router.use('/api/auth', authRoutes);
+
+router.use('/api', emailRoutes);
+
 // router.use('/test', testGoogle);
 // router.use('/google', googleReviewsRoutes);
 // router.use('/', googleAuthRouter);
