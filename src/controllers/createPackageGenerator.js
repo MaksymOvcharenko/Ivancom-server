@@ -17,6 +17,7 @@ import {
   CreateInternetDocumentWarehouse,
 } from '../services/np.js';
 import { registerTransaction } from '../services/przelew/registerTransaction.js';
+import { markPromoUsageIfNeeded } from '../utils/promoPolicy.js';
 
 export const createShipment = async (req, res) => {
   const t = await sequelize.transaction(); // Починаємо транзакцію
@@ -359,7 +360,19 @@ export const createShipment = async (req, res) => {
 
     const paymentId = await createPayment();
     shipmentData.payment_id = paymentId;
+    const promoCode = payment.promocode;
+    const userId = shipmentData.sender_id;
+    console.log(promoCode, userId);
 
+    if (promoCode && userId) {
+      const result = await markPromoUsageIfNeeded(userId, promoCode);
+      console.log('markPromoUsageIfNeeded result:', result);
+
+      // Якщо потрібно — можна зреагувати жорсткіше:
+      // if (result.status === 'already_used') {
+      //   return res.status(409).json({ ok: false, error: 'promo_already_used' });
+      // }
+    }
     // === КРОК 6: TODO - Створення Посилки (Shipment) ===
     const newShipment = await Shipment.create(shipmentData, { transaction: t });
 
