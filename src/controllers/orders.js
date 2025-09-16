@@ -104,52 +104,172 @@ export const createBusinessOrder = async (req, res) => {
     return res.status(422).json({ error: msg });
   }
 };
+// export const getBusinessOrders = async (req, res) => {
+//   try {
+//     const {
+//       businessId,
+//       limit = '50',
+//       offset = '0',
+//       status, // optional: draft|processing|shipped|delivered
+//       from, // optional: ISO date
+//       to, // optional: ISO date
+//       search, // optional: шукає по order_number / tracking / email тощо
+//     } = req.query;
+
+//     if (!businessId) {
+//       return res.status(400).json({ error: 'businessId is required' });
+//     }
+
+//     const where = { business_id: businessId };
+
+//     // фільтр по статусу
+//     if (status) where.status = status;
+
+//     // фільтр по даті створення
+//     if (from || to) {
+//       where.created_at = {};
+//       if (from) where.created_at[Op.gte] = new Date(from);
+//       if (to) where.created_at[Op.lte] = new Date(to);
+//     }
+
+//     // простий пошук
+//     if (search && String(search).trim()) {
+//       const s = String(search).trim();
+//       where[Op.or] = [
+//         { order_number: { [Op.iLike]: `%${s}%` } },
+//         { receiver_email: { [Op.iLike]: `%${s}%` } },
+//         { tracking_inpost: { [Op.iLike]: `%${s}%` } },
+//         { tracking_dhl: { [Op.iLike]: `%${s}%` } },
+//         { receiver_firstname: { [Op.iLike]: `%${s}%` } },
+//         { receiver_lastname: { [Op.iLike]: `%${s}%` } },
+//       ];
+//     }
+
+//     const lim = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
+//     const off = Math.max(parseInt(offset, 10) || 0, 0);
+
+//     const { rows, count } = await BusinessOrder.findAndCountAll({
+//       where,
+//       order: [['created_at', 'DESC']],
+//       limit: lim,
+//       offset: off,
+//     });
+
+//     return res.json({
+//       ok: true,
+//       total: count,
+//       limit: lim,
+//       offset: off,
+//       items: rows,
+//     });
+//   } catch (e) {
+//     return res.status(500).json({ error: e.message });
+//   }
+// };
 export const getBusinessOrders = async (req, res) => {
   try {
-    const {
-      businessId,
-      limit = '50',
-      offset = '0',
-      status, // optional: draft|processing|shipped|delivered
-      from, // optional: ISO date
-      to, // optional: ISO date
-      search, // optional: шукає по order_number / tracking / email тощо
-    } = req.query;
+    const q = req.query;
+    const businessId = q.businessId;
 
     if (!businessId) {
       return res.status(400).json({ error: 'businessId is required' });
     }
 
-    const where = { business_id: businessId };
+    const and = [{ business_id: businessId }];
 
-    // фільтр по статусу
-    if (status) where.status = status;
+    // ---- точкові фільтри ----
+    // статус
+    if (q.status) and.push({ status: q.status });
 
-    // фільтр по даті створення
+    // метод доставки
+    const method = q.method || q.delivery_method;
+    if (method) and.push({ delivery_method: method });
+
+    // клас ваги
+    const weightClass = q.weightClass || q.weight_class;
+    if (weightClass) and.push({ weight_class: Number(weightClass) });
+
+    // № замовлення / партії (LIKE)
+    const orderNumber = (q.orderNumber || q.order_number || '').trim();
+    if (orderNumber)
+      and.push({ order_number: { [Op.iLike]: `%${orderNumber}%` } });
+
+    const batchNumber = (q.batchNumber || q.batch_number || '').trim();
+    if (batchNumber)
+      and.push({ batch_number: { [Op.iLike]: `%${batchNumber}%` } });
+
+    // телефон / email одержувача (LIKE)
+    const receiverPhone = (q.receiverPhone || q.receiver_phone || '').trim();
+    if (receiverPhone)
+      and.push({ receiver_phone: { [Op.iLike]: `%${receiverPhone}%` } });
+
+    const receiverEmail = (q.receiverEmail || q.receiver_email || '').trim();
+    if (receiverEmail)
+      and.push({ receiver_email: { [Op.iLike]: `%${receiverEmail}%` } });
+
+    // місто / код країни
+    const city = (q.city || q.address_city || '').trim();
+    if (city) and.push({ address_city: { [Op.iLike]: `%${city}%` } });
+
+    const countryCodeRaw = (
+      q.countryCode ||
+      q.address_country_code ||
+      ''
+    ).trim();
+    if (countryCodeRaw)
+      and.push({ address_country_code: countryCodeRaw.toUpperCase() });
+
+    // трек (шукаємо одночасно у inpost + dhl)
+    const tracking = (q.tracking || '').trim();
+    if (tracking) {
+      and.push({
+        [Op.or]: [
+          { tracking_inpost: { [Op.iLike]: `%${tracking}%` } },
+          { tracking_dhl: { [Op.iLike]: `%${tracking}%` } },
+        ],
+      });
+    }
+
+    // діапазон дат: підтримка і from/to, і dateFrom/dateTo
+    const from = q.from || q.dateFrom;
+    const to = q.to || q.dateTo;
     if (from || to) {
-      where.created_at = {};
-      if (from) where.created_at[Op.gte] = new Date(from);
-      if (to) where.created_at[Op.lte] = new Date(to);
+      const range = {};
+      if (from) range[Op.gte] = new Date(from);
+      if (to) range[Op.lte] = new Date(to);
+      and.push({ created_at: range });
     }
 
-    // простий пошук
-    if (search && String(search).trim()) {
-      const s = String(search).trim();
-      where[Op.or] = [
-        { order_number: { [Op.iLike]: `%${s}%` } },
-        { receiver_email: { [Op.iLike]: `%${s}%` } },
-        { tracking_inpost: { [Op.iLike]: `%${s}%` } },
-        { tracking_dhl: { [Op.iLike]: `%${s}%` } },
-        { receiver_firstname: { [Op.iLike]: `%${s}%` } },
-        { receiver_lastname: { [Op.iLike]: `%${s}%` } },
-      ];
+    // глобальний пошук (розширив + включив phone)
+    const search = (q.search || '').trim();
+    if (search) {
+      and.push({
+        [Op.or]: [
+          { order_number: { [Op.iLike]: `%${search}%` } },
+          { receiver_email: { [Op.iLike]: `%${search}%` } },
+          { receiver_phone: { [Op.iLike]: `%${search}%` } },
+          { tracking_inpost: { [Op.iLike]: `%${search}%` } },
+          { tracking_dhl: { [Op.iLike]: `%${search}%` } },
+          { receiver_firstname: { [Op.iLike]: `%${search}%` } },
+          { receiver_lastname: { [Op.iLike]: `%${search}%` } },
+        ],
+      });
     }
 
-    const lim = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
-    const off = Math.max(parseInt(offset, 10) || 0, 0);
+    // ---- пагінація: page/pageSize або limit/offset ----
+    const pageParam = q.page ? parseInt(q.page, 10) : null;
+    const pageSizeParam = q.pageSize ? parseInt(q.pageSize, 10) : null;
+
+    const lim = Math.min(
+      Math.max(parseInt(q.limit ?? pageSizeParam ?? '50', 10) || 50, 1),
+      200,
+    );
+    const off = pageParam
+      ? Math.max((pageParam - 1) * lim, 0)
+      : Math.max(parseInt(q.offset ?? '0', 10) || 0, 0);
 
     const { rows, count } = await BusinessOrder.findAndCountAll({
-      where,
+      where: { [Op.and]: and },
       order: [['created_at', 'DESC']],
       limit: lim,
       offset: off,
@@ -160,6 +280,9 @@ export const getBusinessOrders = async (req, res) => {
       total: count,
       limit: lim,
       offset: off,
+      // на майбутнє віддаю ще page/pageSize — фронту зручно
+      page: pageParam ?? Math.floor(off / lim) + 1,
+      pageSize: lim,
       items: rows,
     });
   } catch (e) {
