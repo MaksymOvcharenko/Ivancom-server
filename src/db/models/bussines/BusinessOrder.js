@@ -193,6 +193,7 @@ BusinessOrder.init(
     total_cost: { type: DataTypes.DECIMAL },
 
     // --- Tracking ---
+    inpost_shipment_id: { type: DataTypes.TEXT },
     tracking_inpost: { type: DataTypes.TEXT },
     tracking_dhl: { type: DataTypes.TEXT },
 
