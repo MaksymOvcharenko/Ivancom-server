@@ -179,7 +179,11 @@ BusinessOrder.init(
     dim_width_cm: { type: DataTypes.DECIMAL, defaultValue: 15 },
     dim_height_cm: { type: DataTypes.DECIMAL, defaultValue: 10 },
     declared_value: { type: DataTypes.DECIMAL },
-
+    actual_weight_kg: {
+      type: DataTypes.DECIMAL(10, 3),
+      allowNull: true,
+      comment: 'Фактична вага в кг (може відрізнятися від класу 1/3 кг)',
+    },
     // --- Costs ---
     shipping_route: { type: DataTypes.TEXT },
     shipping_cost: { type: DataTypes.DECIMAL },
@@ -191,6 +195,11 @@ BusinessOrder.init(
     },
     currency: { type: DataTypes.TEXT, allowNull: false, defaultValue: 'PLN' },
     total_cost: { type: DataTypes.DECIMAL },
+    ua_pl_cost: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true, // поки тягнемо з 1С — хай буде null
+      defaultValue: null,
+    },
 
     // --- Tracking ---
     inpost_shipment_id: { type: DataTypes.TEXT },
