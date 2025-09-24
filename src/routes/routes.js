@@ -21,6 +21,7 @@ import emailRoutes from './email.route.js';
 import promoRoutes from './promo.js';
 import inpostLabelRoutes from './bussines/inpostLabel.js';
 import inpostRouterAll from './bussines/inpostLabelAll.js';
+import dhlRouter from './bussines/dhl.js';
 // import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
@@ -50,6 +51,7 @@ router.use('/api', inpostLabelRoutes);
 router.use('/api', inpostRouterAll);
 router.use('/api/auth', authRoutes);
 router.use('/api/promo', promoRoutes);
+router.use('/api/dhl', dhlRouter);
 router.use('/api', emailRoutes);
 
 // router.use('/test', testGoogle);

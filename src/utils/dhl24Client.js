@@ -319,7 +319,17 @@ function defaultPiece() {
     euroReturn: false,
   };
 }
-
+export const DHL_LABEL_TYPES = [
+  'LP', // list przewozowy (PDF)
+  'BLP', // etykieta BLP (PDF)
+  'BLP_A4', // BLP в PDF A4 (інколи називають BLP_PDF_A4 або BLPp? тримай як BLP_A4 якщо у твоїй інсталяції є)
+  'ZBLP', // Zebra ZPL
+  'ZBLP300', // Zebra ZPL 300dpi
+  'QR_PDF', // QR у PDF (ZK i ZC)
+  'QR2_IMG', // QR 2x2 cm PNG
+  'QR4_IMG', // QR 4x4 cm PNG
+  'QR6_IMG', // QR 6x6 cm PNG
+];
 /* ===== CACHES ===== */
 let _intlParamsCache = null; // мапа { countryCode: { product, pieceHeader, ... } }
 
@@ -648,6 +658,145 @@ export async function createDhlShipmentUnified(args = {}) {
     comment,
     reference,
   });
+}
+// export async function getLabels(items = []) {
+//   if (!Array.isArray(items) || items.length === 0) {
+//     throw new Error('getLabels: items is required');
+//   }
+//   const client = await getSoapClient();
+
+//   const payload = {
+//     authData: buildAuth(),
+//     itemsToPrint: {
+//       item: items.slice(0, 3).map((it) => ({
+//         labelType: it.labelType,
+//         // деякі інсталяції хочуть integer, інші — string, тож просто передамо як є
+//         shipmentId: it.shipmentId,
+//       })),
+//     },
+//   };
+
+//   const [res] = await client.getLabelsAsync(payload);
+//   console.log('getLabels res=', res);
+
+//   const raw = res?.getLabelsResult?.itemsToPrintResponse?.item || [];
+//   const mapContentType = (t) => {
+//     if (t === 'ZBLP' || t === 'ZBLP300') return 'application/zpl';
+//     if (t.endsWith('_IMG')) return 'image/png';
+//     return 'application/pdf';
+//   };
+
+//   return raw.map((it) => ({
+//     shipmentId: it?.shipmentId ?? null,
+//     labelType: it?.labelType ?? null,
+//     data: it?.labelData ?? null, // base64
+//     contentType: mapContentType(it?.labelType),
+//   }));
+// }
+export async function getLabels(items = []) {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error('getLabels: items is required');
+  }
+  const client = await getSoapClient();
+
+  const payload = {
+    authData: buildAuth(),
+    itemsToPrint: {
+      item: items.slice(0, 3).map((it) => ({
+        labelType: it.labelType,
+        shipmentId: it.shipmentId,
+      })),
+    },
+  };
+
+  const [res] = await client.getLabelsAsync(payload);
+  // console.log('getLabels raw response:', JSON.stringify(res, null, 2)); // ← лиши на час дебага
+
+  const root = res?.getLabelsResult || res?.GetLabelsResult || res;
+
+  // helpers
+  const arrify = (v) => (Array.isArray(v) ? v : v ? [v] : []);
+  const firstNonEmpty = (...cands) => {
+    for (const c of cands) {
+      const a = arrify(c);
+      if (a.length) return a;
+    }
+    return [];
+  };
+
+  // різні варіанти, які трапляються у DHL24:
+  // 1) { getLabelsResult: { itemsToPrintResponse: { item: [...] } } }
+  // 2) { getLabelsResult: { item: [...] } }
+  // 3) інколи просто { getLabelsResult: { ...one item... } }
+  const raw = firstNonEmpty(
+    root?.itemsToPrintResponse?.item,
+    root?.itemsToPrintResponse,
+    root?.item,
+    root,
+  );
+
+  const mapContentType = (t = '') => {
+    if (t === 'ZBLP' || t === 'ZBLP300') return 'application/zpl';
+    if (String(t).endsWith('_IMG')) return 'image/png';
+    return 'application/pdf';
+  };
+
+  // у різних інсталяціях поле з base64 називається labelData / labeldata / data / fileContent / file
+  const out = raw
+    .map((it) => {
+      const labelType = it?.labelType ?? it?.type ?? null;
+      const shipmentId = it?.shipmentId ?? it?.shipmentID ?? it?.id ?? null;
+      const data =
+        it?.labelData ??
+        it?.labeldata ??
+        it?.data ??
+        it?.fileContent ??
+        it?.file ??
+        null;
+
+      return data
+        ? {
+            shipmentId,
+            labelType,
+            data,
+            contentType: mapContentType(labelType),
+          }
+        : null;
+    })
+    .filter(Boolean);
+
+  return out;
+}
+
+/**
+ * Трекінг/події по відправці.
+ * Повертає: { shipmentId, receivedBy, events: [{date, description, location?, status?}] }
+ */
+export async function getTrackAndTraceInfo(shipmentId) {
+  if (!shipmentId)
+    throw new Error('getTrackAndTraceInfo: shipmentId is required');
+  const client = await getSoapClient();
+
+  const payload = { authData: buildAuth(), shipmentId };
+  const [res] = await client.getTrackAndTraceInfoAsync(payload);
+  const r = res?.getTrackAndTraceInfoResult || {};
+
+  const events = (r?.events?.item || []).map((e) => ({
+    date: e?.eventTime || e?.time || e?.date || null,
+    description: e?.description || e?.eventDescription || e?.status || null,
+    location: e?.terminal || e?.location || null,
+    status: e?.status || null,
+  }));
+
+  // відсортуємо за датою якщо можливо
+  events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  return {
+    shipmentId: r?.shipmentId || String(shipmentId),
+    receivedBy: r?.receivedBy || null,
+    events,
+    raw: r, // на випадок дебага
+  };
 }
 /* корисні експорти */
 export const auth = buildAuth;
