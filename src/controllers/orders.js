@@ -11,379 +11,7 @@ import {
   computeInsuranceCost,
   computeShippingCost,
 } from '../services/tariffs.js';
-// export const createBusinessOrder = async (req, res) => {
-//   try {
-//     const b = req.body;
-
-//     // обов’язкові
-//     const businessId =
-//       req.user?.selectedBusinessId ||
-//       b.meta?.selectedBusinessId ||
-//       b.businessId;
-//     const senderClientId = b.sender?.clientId;
-
-//     if (!businessId)
-//       return res.status(400).json({ error: 'business_id is required' });
-//     if (!senderClientId)
-//       return res.status(400).json({ error: 'sender.clientId is required' });
-//     if (!b.orderNumber)
-//       return res.status(400).json({ error: 'orderNumber is required' });
-//     if (!b.package?.method)
-//       return res.status(400).json({ error: 'delivery_method is required' });
-
-//     const dims = b.shipment?.dims ?? { length: 15, width: 15, height: 10 };
-//     const weightClass =
-//       b.shipment?.weightClass === 1 || b.shipment?.weightClass === 3
-//         ? b.shipment.weightClass
-//         : null;
-
-//     const created = await BusinessOrder.create({
-//       // ключові
-//       business_id: businessId,
-//       order_number: b.orderNumber,
-//       batch_number: b.batchNumber || null,
-
-//       // sender
-//       sender_client_id: senderClientId,
-//       sender_promo_code: b.sender?.promoCode ?? null,
-//       sender_payer: b.sender?.payer ?? 'sender',
-//       sender_name: b.sender?.name ?? null,
-//       sender_surname: b.sender?.surname ?? null,
-//       sender_phone: b.sender?.phoneE164 ?? null,
-//       sender_email: b.sender?.email ?? null,
-
-//       // receiver
-//       receiver_type: b.receiver?.type === 'company' ? 'company' : 'person',
-//       receiver_firstname: b.receiver?.firstName ?? null,
-//       receiver_lastname: b.receiver?.lastName ?? null,
-//       receiver_phone: b.receiver?.phoneE164 ?? null,
-//       receiver_email: b.receiver?.email ?? null,
-//       receiver_company:
-//         b.receiver?.type === 'company' ? b.receiver?.companyName ?? null : null,
-
-//       // address
-//       address_country: b.package?.address?.country ?? null,
-//       address_country_code: b.package?.address?.countryCode ?? null,
-//       address_city: b.package?.address?.city ?? null,
-//       address_region: b.package?.address?.region ?? null,
-//       address_street: b.package?.address?.street ?? null,
-//       address_postal_code: b.package?.address?.postalCode ?? null,
-//       address_house_number: b.package?.address?.houseNumber ?? null,
-//       address_apartment: b.package?.address?.apartment ?? null,
-
-//       // delivery
-//       delivery_method: b.package?.method, // required вище
-//       paczkomat_code: b.package?.paczkomat ?? null,
-
-//       // shipment
-//       declared_value: b.shipment?.declaredValue ?? null,
-//       weight_class: weightClass,
-//       dim_length_cm: dims.length,
-//       dim_width_cm: dims.width,
-//       dim_height_cm: dims.height,
-
-//       // costs (за бажанням передаєш з фронта)
-//       shipping_route: b.costs?.shipping_route ?? null,
-//       shipping_cost: b.costs?.shipping_cost ?? null,
-//       box_cost: b.costs?.box_cost ?? 2,
-//       insurance_cost: b.costs?.insurance_cost ?? 0,
-//       currency: b.costs?.currency ?? 'PLN',
-//       //   total_cost: b.costs?.total_cost ?? null, // якщо не рахуєш на бек
-
-//       // tracking
-//       tracking_inpost: b.tracking?.inpost ?? null,
-//       tracking_dhl: b.tracking?.dhl ?? null,
-
-//       status: b.status ?? 'draft',
-
-//       // meta — JSONB
-//       meta: {
-//         ...b.meta,
-//         from_ui: true,
-//       },
-
-//       created_at: new Date(),
-//       updated_at: new Date(),
-//     });
-
-//     return res.status(201).json({ ok: true, id: created.id });
-//   } catch (e) {
-//     const msg = e?.errors?.[0]?.message || e.message || 'Internal error';
-//     return res.status(422).json({ error: msg });
-//   }
-// };
-// export const getBusinessOrders = async (req, res) => {
-//   try {
-//     const {
-//       businessId,
-//       limit = '50',
-//       offset = '0',
-//       status, // optional: draft|processing|shipped|delivered
-//       from, // optional: ISO date
-//       to, // optional: ISO date
-//       search, // optional: шукає по order_number / tracking / email тощо
-//     } = req.query;
-
-//     if (!businessId) {
-//       return res.status(400).json({ error: 'businessId is required' });
-//     }
-
-//     const where = { business_id: businessId };
-
-//     // фільтр по статусу
-//     if (status) where.status = status;
-
-//     // фільтр по даті створення
-//     if (from || to) {
-//       where.created_at = {};
-//       if (from) where.created_at[Op.gte] = new Date(from);
-//       if (to) where.created_at[Op.lte] = new Date(to);
-//     }
-
-//     // простий пошук
-//     if (search && String(search).trim()) {
-//       const s = String(search).trim();
-//       where[Op.or] = [
-//         { order_number: { [Op.iLike]: `%${s}%` } },
-//         { receiver_email: { [Op.iLike]: `%${s}%` } },
-//         { tracking_inpost: { [Op.iLike]: `%${s}%` } },
-//         { tracking_dhl: { [Op.iLike]: `%${s}%` } },
-//         { receiver_firstname: { [Op.iLike]: `%${s}%` } },
-//         { receiver_lastname: { [Op.iLike]: `%${s}%` } },
-//       ];
-//     }
-
-//     const lim = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
-//     const off = Math.max(parseInt(offset, 10) || 0, 0);
-
-//     const { rows, count } = await BusinessOrder.findAndCountAll({
-//       where,
-//       order: [['created_at', 'DESC']],
-//       limit: lim,
-//       offset: off,
-//     });
-
-//     return res.json({
-//       ok: true,
-//       total: count,
-//       limit: lim,
-//       offset: off,
-//       items: rows,
-//     });
-//   } catch (e) {
-//     return res.status(500).json({ error: e.message });
-//   }
-// };
-// controllers/businessOrders/createBusinessOrder.js
-
-// export const createBusinessOrder = async (req, res) => {
-//   try {
-//     const b = req.body;
-
-//     // обов’язкові
-//     const businessId =
-//       req.user?.selectedBusinessId ||
-//       b.meta?.selectedBusinessId ||
-//       b.businessId;
-//     const senderClientId = b.sender?.clientId;
-
-//     if (!businessId)
-//       return res.status(400).json({ error: 'business_id is required' });
-//     if (!senderClientId)
-//       return res.status(400).json({ error: 'sender.clientId is required' });
-//     if (!b.orderNumber)
-//       return res.status(400).json({ error: 'orderNumber is required' });
-//     if (!b.package?.method)
-//       return res.status(400).json({ error: 'delivery_method is required' });
-
-//     const dims = b.shipment?.dims ?? { length: 15, width: 15, height: 10 };
-//     const weightClass =
-//       b.shipment?.weightClass === 1 || b.shipment?.weightClass === 3
-//         ? b.shipment.weightClass
-//         : null;
-
-//     // 1) створюємо ордер у БД (щоб мати id / order_number)
-//     const created = await BusinessOrder.create({
-//       // ключові
-//       business_id: businessId,
-//       order_number: b.orderNumber,
-//       batch_number: b.batchNumber || null,
-
-//       // sender
-//       sender_client_id: senderClientId,
-//       sender_promo_code: b.sender?.promoCode ?? null,
-//       sender_payer: b.sender?.payer ?? 'sender',
-//       sender_name: b.sender?.name ?? null,
-//       sender_surname: b.sender?.surname ?? null,
-//       sender_phone: b.sender?.phoneE164 ?? null,
-//       sender_email: b.sender?.email ?? null,
-
-//       // receiver
-//       receiver_type: b.receiver?.type === 'company' ? 'company' : 'person',
-//       receiver_firstname: b.receiver?.firstName ?? null,
-//       receiver_lastname: b.receiver?.lastName ?? null,
-//       receiver_phone: b.receiver?.phoneE164 ?? null,
-//       receiver_email: b.receiver?.email ?? null,
-//       receiver_company:
-//         b.receiver?.type === 'company' ? b.receiver?.companyName ?? null : null,
-
-//       // address
-//       address_country: b.package?.address?.country ?? null,
-//       address_country_code: b.package?.address?.countryCode ?? null,
-//       address_city: b.package?.address?.city ?? null,
-//       address_region: b.package?.address?.region ?? null,
-//       address_street: b.package?.address?.street ?? null,
-//       address_postal_code: b.package?.address?.postalCode ?? null,
-//       address_house_number: b.package?.address?.houseNumber ?? null,
-//       address_apartment: b.package?.address?.apartment ?? null,
-
-//       // delivery
-//       delivery_method: b.package?.method,
-//       paczkomat_code: b.package?.paczkomat ?? null,
-
-//       // shipment
-//       declared_value: b.shipment?.declaredValue ?? null,
-//       weight_class: weightClass, // 1 | 3
-//       dim_length_cm: dims.length,
-//       dim_width_cm: dims.width,
-//       dim_height_cm: dims.height,
-
-//       // costs (опційно з фронта)
-//       shipping_route: b.costs?.shipping_route ?? null,
-//       shipping_cost: b.costs?.shipping_cost ?? null,
-//       box_cost: b.costs?.box_cost ?? 2,
-//       insurance_cost: b.costs?.insurance_cost ?? 0,
-//       currency: b.costs?.currency ?? 'PLN',
-//       // total_cost: b.costs?.total_cost ?? null,
-
-//       // tracking (може оновитись нижче після InPost)
-//       tracking_inpost: b.tracking?.inpost ?? null,
-//       tracking_dhl: b.tracking?.dhl ?? null,
-
-//       status: b.status ?? 'draft',
-//       meta: { ...b.meta, from_ui: true },
-
-//       created_at: new Date(),
-//       updated_at: new Date(),
-//     });
-
-//     // 2) якщо InPost — створюємо відправлення і одразу тягнемо трек
-//     let partner = null;
-//     const method = b.package?.method;
-//     const isInpostCourier = method === 'inpost_courier';
-//     const isInpostLocker = method === 'inpost_paczkomat';
-
-//     if (isInpostCourier || isInpostLocker) {
-//       // базова валідація під InPost
-//       if (!b.receiver?.email || !b.receiver?.phoneE164) {
-//         return res
-//           .status(400)
-//           .json({
-//             error:
-//               'receiver.email and receiver.phoneE164 are required for InPost',
-//           });
-//       }
-
-//       const weightTier = weightClass === 3 ? '3kg' : '1kg';
-//       const comment = b.meta?.comment || b.meta?.notes || '';
-
-//       try {
-//         if (isInpostCourier) {
-//           const addr = b.package?.address || {};
-//           if ((addr.countryCode || 'PL') !== 'PL') {
-//             return res
-//               .status(400)
-//               .json({ error: 'InPost courier requires PL address' });
-//           }
-//           partner = await createInpostCourierSimpleOnce({
-//             orderNumber: b.orderNumber,
-//             comment,
-//             weightTier,
-//             receiver: {
-//               firstName: b.receiver?.firstName,
-//               lastName: b.receiver?.lastName,
-//               companyName:
-//                 b.receiver?.type === 'company'
-//                   ? b.receiver?.companyName
-//                   : undefined,
-//               email: b.receiver?.email,
-//               phone: b.receiver?.phoneE164,
-//             },
-//             address: {
-//               street: addr.street,
-//               building: addr.houseNumber,
-//               city: addr.city,
-//               post_code: addr.postalCode,
-//               country_code: addr.countryCode || 'PL',
-//               apartment: addr.apartment,
-//             },
-//           });
-//         } else {
-//           // paczkomat
-//           if (!b.package?.paczkomat) {
-//             return res
-//               .status(400)
-//               .json({
-//                 error: 'paczkomat_code is required for inpost_paczkomat',
-//               });
-//           }
-//           partner = await createInpostLockerSimpleOnce({
-//             orderNumber: b.orderNumber,
-//             comment,
-//             receiver: {
-//               firstName: b.receiver?.firstName,
-//               lastName: b.receiver?.lastName,
-//               companyName:
-//                 b.receiver?.type === 'company'
-//                   ? b.receiver?.companyName
-//                   : undefined,
-//               email: b.receiver?.email,
-//               phone: b.receiver?.phoneE164,
-//             },
-//             lockerId: b.package?.paczkomat,
-//           });
-//         }
-
-//         // 3) апдейтимо ордер даними партнера
-//         await created.update({
-//           inpost_shipment_id: partner?.id || null,
-//           tracking_inpost: partner?.trackingNumber || null,
-//           status: 'processing',
-//           updated_at: new Date(),
-//         });
-//       } catch (err) {
-//         // помилка InPost — зберігаємо, але сигналізуємо фронту
-//         await created.update({
-//           status: 'draft',
-//           meta: {
-//             ...created.meta,
-//             inpost_error: err.response?.data || err.message,
-//           },
-//           updated_at: new Date(),
-//         });
-//         return res.status(201).json({
-//           ok: true,
-//           id: created.id,
-//           warning: 'inpost_failed',
-//           inpost_error: err.response?.data || err.message,
-//         });
-//       }
-//     }
-
-//     // 4) успіх
-//     return res.status(201).json({
-//       ok: true,
-//       id: created.id,
-//       inpost_shipment_id: partner?.id || null,
-//       tracking_inpost: partner?.trackingNumber || null,
-//     });
-//   } catch (e) {
-//     const msg = e?.errors?.[0]?.message || e.message || 'Internal error';
-//     return res.status(422).json({ error: msg });
-//   }
-// };
-// import { computeShippingCost, computeInsuranceCost } from "../services/tariffs.js";
-
+import { createDhlShipmentUnified } from '../utils/dhl24Client.js';
 export const createBusinessOrder = async (req, res) => {
   try {
     const b = req.body;
@@ -406,6 +34,7 @@ export const createBusinessOrder = async (req, res) => {
     const method = b.package.method; // 'inpost_paczkomat' | 'inpost_courier' | 'dhl_courier_person' | ...
     const isInpostCourier = method === 'inpost_courier';
     const isInpostLocker = method === 'inpost_paczkomat';
+    const isDhlCourier = method === 'dhl_courier';
 
     const dims = b.shipment?.dims ?? { length: 15, width: 15, height: 10 };
     const weightClass =
@@ -589,12 +218,123 @@ export const createBusinessOrder = async (req, res) => {
         });
       }
     }
+    // ---- 3) DHL створення (за потреби) ----
+    if (isDhlCourier) {
+      const addr = b.package?.address || {};
+      // Мінімальна валідація адреси для DHL
+      if (
+        !addr?.countryCode ||
+        !addr?.postalCode ||
+        !addr?.city ||
+        !addr?.street
+      ) {
+        return res.status(400).json({
+          error:
+            'DHL requires address.countryCode, address.postalCode, address.city, address.street',
+        });
+      }
 
+      // DHL отримувач: компанія чи фіз.особа
+      const isCompany = b.receiver?.type === 'company';
+      const receiverName = isCompany
+        ? b.receiver?.companyName ||
+          `${b.receiver?.firstName || ''} ${b.receiver?.lastName || ''}`.trim()
+        : `${b.receiver?.firstName || ''} ${b.receiver?.lastName || ''}`.trim();
+
+      // Вага 1 або 3 (за замовчуванням 1)
+      const weightKg = weightClass === 1 || weightClass === 3 ? weightClass : 1;
+
+      // Коментар -> на CMR (100 симв.)
+      const rawNote = b.meta?.comment || b.meta?.notes || '';
+      const comment = `${b.orderNumber} ${rawNote}`.trim().slice(0, 100);
+
+      // Референс (до 50)
+      const reference = String(b.orderNumber).slice(0, 50);
+
+      // Оцінка/страховка (можеш передавати один з варіантів)
+      const valuationUah = Number(b.shipment?.declaredValueUah) || 0; // якщо з фронта у грн
+      const valuationPln = Number(b.shipment?.declaredValuePln) || 0; // якщо одразу в злотих
+
+      // Опційно дата забору (YYYY-MM-DD). Якщо не передаси — візьметься сьогодні,
+      // а наша обгортка createDhlShipmentUnified підбере першу доступну при помилці.
+      const shipmentDate = b.meta?.pickupDate || undefined;
+
+      try {
+        const dhl = await createDhlShipmentUnified({
+          receiver: {
+            isCompany,
+            country: addr.countryCode,
+            name: receiverName,
+            postalCode: addr.postalCode,
+            city: addr.city,
+            street: addr.street,
+            houseNumber: addr.houseNumber,
+            apartmentNumber: addr.apartment,
+            contactPerson: isCompany
+              ? b.receiver?.companyName || receiverName
+              : receiverName,
+            contactPhone: b.receiver?.phoneE164,
+            contactEmail: b.receiver?.email,
+          },
+          weightKg,
+          comment,
+          reference,
+          shipmentDate,
+          // передай рівно один з них (або обидва — ми обробимо пріоритетно PLN)
+          valuationPln: valuationPln > 0 ? valuationPln : undefined,
+          valuationUah:
+            valuationPln > 0
+              ? undefined
+              : valuationUah > 0
+              ? valuationUah
+              : undefined,
+          // shipper використовує дефолт з dhl24Client.js; якщо треба — прокинь свій:
+          // shipper: {...}
+        });
+
+        const dhlRes = dhl?.[0] || null;
+        await created.update({
+          tracking_dhl: dhlRes?.shipmentId || null,
+          status: dhlRes?.error ? 'draft' : 'processing',
+          meta: {
+            ...created.meta,
+            dhl_order_status: dhlRes?.orderStatus || null,
+            dhl_error: dhlRes?.error || null,
+          },
+          updated_at: new Date(),
+        });
+
+        if (dhlRes?.error) {
+          return res.status(201).json({
+            ok: true,
+            id: created.id,
+            warning: 'dhl_failed',
+            dhl_error: dhlRes.error,
+          });
+        }
+      } catch (err) {
+        await created.update({
+          status: 'draft',
+          meta: {
+            ...created.meta,
+            dhl_error: err?.message || err,
+          },
+          updated_at: new Date(),
+        });
+        return res.status(201).json({
+          ok: true,
+          id: created.id,
+          warning: 'dhl_failed',
+          dhl_error: err?.message || String(err),
+        });
+      }
+    }
     return res.status(201).json({
       ok: true,
       id: created.id,
       inpost_shipment_id: partner?.id || null,
       tracking_inpost: partner?.trackingNumber || null,
+      tracking_dhl: created.tracking_dhl || null,
     });
   } catch (e) {
     const msg = e?.errors?.[0]?.message || e.message || 'Internal error';
