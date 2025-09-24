@@ -260,6 +260,18 @@ function toIsoDateFromPl(s) {
   if (!m) return null;
   return `${m[3]}-${m[2]}-${m[1]}`;
 }
+// прибрати пробіли/непереносимі пробіли і будь-які тире/довгі дефіси
+export function normalizePostalSimple(v) {
+  return String(v ?? '')
+    .normalize('NFKC')
+    .replace(/[\u00A0\s\-–—]+/g, '') // пробіли + -, – , —
+    .toUpperCase();
+}
+
+// приклади:
+// "28 217"   -> "28217"
+// "12-345"   -> "12345"
+// "1234 AB"  -> "1234AB"
 
 // --- helper: витягнути всі доступні дати з тексту помилки DHL
 function extractAvailableDatesFromError(errMsg = '') {

@@ -11,7 +11,10 @@ import {
   computeInsuranceCost,
   computeShippingCost,
 } from '../services/tariffs.js';
-import { createDhlShipmentUnified } from '../utils/dhl24Client.js';
+import {
+  createDhlShipmentUnified,
+  normalizePostalSimple,
+} from '../utils/dhl24Client.js';
 export const createBusinessOrder = async (req, res) => {
   try {
     const b = req.body;
@@ -265,7 +268,7 @@ export const createBusinessOrder = async (req, res) => {
             isCompany,
             country: addr.countryCode,
             name: receiverName,
-            postalCode: addr.postalCode,
+            postalCode: normalizePostalSimple(addr.postalCode),
             city: addr.city,
             street: addr.street,
             houseNumber: addr.houseNumber,
