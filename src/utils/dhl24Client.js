@@ -1,216 +1,4 @@
-// // import soap from 'soap';
-// // import 'dotenv/config';
-// // import { config } from 'dotenv';
-// // import { fileURLToPath } from 'url';
-// // import { dirname, resolve } from 'path';
-// // const __filename = fileURLToPath(import.meta.url);
-// // const __dirname = dirname(__filename);
-// // config({ path: resolve(__dirname, '../../.env') });
-// // const WSDL_URL = process.env.DHL24_WSDL_URL || 'https://dhl24.com.pl/webapi2';
 
-// // function buildAuth() {
-// //   const pass = process.env.DHL24_PASSWORD || '';
-// //   const key = process.env.DHL24_API_KEY || '';
-// //   return {
-// //     username: process.env.DHL24_LOGIN || '',
-// //     password: key ? `${pass}|${key}` : pass,
-// //   };
-// // }
-
-// // async function getSoapClient() {
-// //   // soap has CJS default export; ESM default import works in Node >=16
-// //   return await soap.createClientAsync(WSDL_URL, { timeout: 30000 });
-// // }
-
-// // export async function getVersion() {
-// //   const client = await getSoapClient();
-// //   const [res] = await client.getVersionAsync({});
-// //   return res?.getVersionResult;
-// // }
-
-// // // Знадобиться далі для createShipments
-// // export const auth = buildAuth;
-// /* eslint-env node */
-// import soap from 'soap';
-// import 'dotenv/config';
-// import { config } from 'dotenv';
-// import { fileURLToPath } from 'url';
-// import { dirname, resolve } from 'path';
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-// config({ path: resolve(__dirname, '../../.env') });
-
-// const WSDL_URL = process.env.DHL24_WSDL_URL || 'https://dhl24.com.pl/webapi2';
-// const LOGIN = process.env.DHL24_LOGIN || '';
-// const PASS = process.env.DHL24_PASSWORD || '';
-// // const API_KEY = process.env.DHL24_API_KEY || '';
-// const ACCOUNT = String(process.env.DHL24_ACCOUNT_NUMBER || '');
-// const DEF_PROD = process.env.DHL24_DEFAULT_PRODUCT || 'AH';
-
-// /* ===== AUTH ===== */
-// function buildAuth() {
-//   return {
-//     username: LOGIN,
-//     password: PASS,
-//   };
-// }
-
-// /* ===== SOAP CLIENT ===== */
-// async function getSoapClient() {
-//   return await soap.createClientAsync(WSDL_URL, { timeout: 30000 });
-// }
-
-// /* ===== HELPERS ===== */
-// function digitsOnly(s = '') {
-//   return String(s).replace(/\D+/g, '');
-// }
-// function normalizePostcode(s = '') {
-//   return digitsOnly(s).slice(0, 5);
-// } // 5 цифр без дефіса
-// function trimLen(s = '', n) {
-//   const v = String(s || '');
-//   return typeof n === 'number' ? v.slice(0, n) : v;
-// }
-// function clampHouseApt({ houseNumber = '', apartmentNumber = '' } = {}) {
-//   let h = trimLen(houseNumber, 15);
-//   let a = trimLen(apartmentNumber, 15);
-//   if ((h + a).length > 15) a = a.slice(0, Math.max(15 - h.length, 0));
-//   return { houseNumber: h, apartmentNumber: a };
-// }
-
-// function mapAddress(a = {}) {
-//   const { houseNumber, apartmentNumber } = clampHouseApt(a);
-//   return {
-//     name: trimLen(a.name, 60),
-//     postalCode: normalizePostcode(a.postalCode),
-//     city: trimLen(a.city, 17),
-//     street: trimLen(a.street, 35),
-//     houseNumber,
-//     apartmentNumber,
-//     contactPerson: trimLen(a.contactPerson || a.name || '', 60),
-//     contactPhone: trimLen(a.contactPhone || '', 20),
-//     contactEmail: trimLen(a.contactEmail || '', 60),
-//   };
-// }
-
-// function mapReceiver(r = {}) {
-//   const { houseNumber, apartmentNumber } = clampHouseApt(r);
-//   return {
-//     addressType: r.addressType || 'B', // B/C
-//     country: r.country || 'PL',
-//     isPackstation: Boolean(r.isPackstation) || false,
-//     isPostfiliale: Boolean(r.isPostfiliale) || false,
-//     postnummer: r.postnummer || null, // тільки для DE Packstation
-//     name: trimLen(r.name, 60),
-//     postalCode: normalizePostcode(r.postalCode),
-//     city: trimLen(r.city, 17),
-//     street: trimLen(r.street, 35),
-//     houseNumber,
-//     apartmentNumber,
-//     contactPerson: trimLen(r.contactPerson || r.name || '', 60),
-//     contactPhone: trimLen(r.contactPhone || '', 20),
-//     contactEmail: trimLen(r.contactEmail || '', 60),
-//   };
-// }
-
-// function defaultPiece() {
-//   return {
-//     type: 'PACKAGE',
-//     width: 15,
-//     height: 10,
-//     length: 15,
-//     weight: 1,
-//     quantity: 1,
-//     nonStandard: false,
-//     euroReturn: false,
-//   };
-// }
-
-// /* ===== PUBLIC ===== */
-// export async function getVersion() {
-//   const client = await getSoapClient();
-//   const [res] = await client.getVersionAsync({});
-//   return res?.getVersionResult;
-// }
-
-// /**
-//  * createShipments — універсальний виклик DHL24 WebAPI (SOAP)
-//  * @returns Array<{shipmentId:string|null, orderStatus:string|null, error?:string|null}>
-//  */
-// export async function createShipments({
-//   shipper,
-//   receiver,
-//   pieces,
-//   payment,
-//   service,
-//   shipmentDate = new Date().toISOString().slice(0, 10),
-//   content = 'rzeczy',
-//   comment = '',
-//   reference = '',
-//   skipRestrictionCheck = false,
-// } = {}) {
-//   const client = await getSoapClient();
-
-//   const finalPayment = {
-//     paymentMethod: 'BANK_TRANSFER',
-//     payerType: 'SHIPPER',
-//     accountNumber: ACCOUNT,
-//     ...(payment || {}),
-//   };
-
-//   const finalService = {
-//     product: DEF_PROD,
-//     ...(service || {}),
-//   };
-
-//   const payload = {
-//     authData: buildAuth(),
-//     shipments: {
-//       item: [
-//         {
-//           shipper: mapAddress(shipper || {}),
-//           receiver: mapReceiver(receiver || {}),
-//           pieceList: {
-//             item: pieces && pieces.length ? pieces : [defaultPiece()],
-//           },
-//           payment: finalPayment,
-//           service: finalService,
-//           shipmentDate,
-//           skipRestrictionCheck,
-//           comment,
-//           content,
-//           reference,
-//         },
-//       ],
-//     },
-//   };
-
-//   try {
-//     const [res] = await client.createShipmentsAsync(payload);
-//     const list = res?.createShipmentsResult?.item || [];
-//     return list.map((it) => ({
-//       shipmentId: it?.shipmentId ?? null,
-//       orderStatus: it?.orderStatus ?? null,
-//       error: it?.error ?? null,
-//     }));
-//   } catch (e) {
-//     const msg =
-//       e?.root?.Envelope?.Body?.Fault?.faultstring ||
-//       e?.message ||
-//       'DHL24 createShipments error';
-//     return [{ shipmentId: null, orderStatus: null, error: String(msg) }];
-//   }
-// }
-
-// /* опційно корисні експорти */
-// export const auth = buildAuth;
-// export const _normalize = {
-//   normalizePostcode,
-//   clampHouseApt,
-//   mapAddress,
-//   mapReceiver,
-// };
-/* eslint-env node */
 import soap from 'soap';
 import 'dotenv/config';
 import { config } from 'dotenv';
@@ -233,17 +21,17 @@ function buildAuth() {
 }
 
 /* ===== SOAP CLIENT ===== */
-async function getSoapClient() {
+export async function getSoapClient() {
   return await soap.createClientAsync(WSDL_URL, { timeout: 30000 });
 }
 
 /* ===== HELPERS ===== */
-function digitsOnly(s = '') {
-  return String(s).replace(/\D+/g, '');
-}
-function normalizePostcode(s = '') {
-  return digitsOnly(s).slice(0, 5); // 5 цифр
-}
+// function digitsOnly(s = '') {
+//   return String(s).replace(/\D+/g, '');
+// }
+// function normalizePostcode(s = '') {
+//   return digitsOnly(s).slice(0, 5); // 5 цифр
+// }
 function trimLen(s = '', n) {
   const v = String(s || '');
   return typeof n === 'number' ? v.slice(0, n) : v;
@@ -267,7 +55,64 @@ export function normalizePostalSimple(v) {
     .replace(/[\u00A0\s\-–—]+/g, '') // пробіли + -, – , —
     .toUpperCase();
 }
+// десь поряд:
+const _clean = (v) =>
+  String(v ?? "")
+    .normalize("NFKC")
+    .replace(/\u00A0/g, " ")
+    .replace(/[\u2010-\u2015\u2212]/g, "-") // різні види тире → "-"
+    .replace(/\s+/g, " ")
+    .trim();
 
+export function normalizePostalInternational(v = "", country) {
+  const cc = String(country || "").toUpperCase();
+  let s = _clean(v);
+
+  // якщо країна невідома — просто вертаємо очищене значення БЕЗ видалення дефісів
+  if (!cc) return s;
+
+  switch (cc) {
+    // Польща: NN-NNN. Якщо дали "NNNNN", вставляємо дефіс 2-3.
+    // case "PL": {
+    //   const d = s.replace(/\D/g, "");
+    //   if (/^\d{5}$/.test(d)) return `${d.slice(0, 2)}-${d.slice(2)}`;
+    //   if (/^\d{2}-\d{3}$/.test(s)) return s;
+    //   return s; // не ламати, якщо щось нетипове
+    // }
+
+    // Португалія: NNNN-NNN. Якщо дали "NNNNNNN", вставляємо дефіс 4-5.
+    case "PT": {
+      const compact = s.replace(/\s+/g, "");
+      if (/^\d{4}-\d{3}$/.test(compact)) return compact;
+      const digits = compact.replace(/-/g, "");
+      if (/^\d{7}$/.test(digits)) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+      return compact;
+    }
+
+    // Нідерланди: NNNNAA (без пробілу, літери UPPER)
+    case "NL": {
+      const z = s.replace(/\s+/g, "").toUpperCase();
+      return z;
+    }
+
+    // Мальта: AAANNNN (3 літери + 4 цифри, без пробілу)
+    case "MT": {
+      const z = s.replace(/\s+/g, "").toUpperCase();
+      return z;
+    }
+
+    // Велика Британія: залишаємо пробіл перед останніми 3 символами
+    // (канонізація без суворої перевірки всіх варіантів)
+    case "GB": {
+      let z = s.replace(/\s+/g, "").toUpperCase();
+      if (z.length > 3) z = z.replace(/^(.+)([A-Z0-9]{3})$/, "$1 $2");
+      return z;
+    }
+
+    default:
+      return s;
+  }
+}
 // приклади:
 // "28 217"   -> "28217"
 // "12-345"   -> "12345"
@@ -285,40 +130,41 @@ function extractAvailableDatesFromError(errMsg = '') {
   return [...new Set(iso)];
 }
 function mapAddress(a = {}) {
-  const { houseNumber, apartmentNumber } = clampHouseApt(a);
+  // для shipper country ОБОВʼЯЗКОВО має їхати у SOAP
+  const country = String(a.country || "PL").toUpperCase();
   return {
-    name: trimLen(a.name, 60),
-    postalCode: normalizePostcode(a.postalCode),
-    city: trimLen(a.city, 17),
-    street: trimLen(a.street, 35),
-    houseNumber,
-    apartmentNumber,
-    contactPerson: trimLen(a.contactPerson || a.name || '', 60),
-    contactPhone: trimLen(a.contactPhone || '', 20),
-    contactEmail: trimLen(a.contactEmail || '', 60),
+    name: a.name,
+    country,                          // <-- не викидати!
+    street: a.street,
+    houseNumber: a.houseNumber,
+    city: a.city,
+    postalCode: normalizePostalInternational(a.postalCode, country),
+    apartmentNumber: a.apartmentNumber || "",
+    contactPerson: a.contactPerson || a.name,
+    contactPhone: a.contactPhone,
+    contactEmail: a.contactEmail,
   };
 }
 
 function mapReceiver(r = {}) {
-  const { houseNumber, apartmentNumber } = clampHouseApt(r);
+  const country = String(r.country || "").toUpperCase();
   return {
-    addressType: r.addressType || 'B', // B—firma, C—osoba
-    country: r.country || 'PL',
-    isPackstation: Boolean(r.isPackstation) || false,
-    isPostfiliale: Boolean(r.isPostfiliale) || false,
-    postnummer: r.postnummer || null, // тільки для DE Packstation
-    name: trimLen(r.name, 60),
-    postalCode: normalizePostcode(r.postalCode),
-    city: trimLen(r.city, 17),
-    street: trimLen(r.street, 35),
-    houseNumber,
-    apartmentNumber,
-    contactPerson: trimLen(r.contactPerson || r.name || '', 60),
-    contactPhone: trimLen(r.contactPhone || '', 20),
-    contactEmail: trimLen(r.contactEmail || '', 60),
+    addressType: r.addressType || (r.isCompany ? "B" : "C"),
+    country,                          // <-- обовʼязково
+    isPackstation: false,
+    isPostfiliale: false,
+    postnummer: null,
+    name: r.name,
+    postalCode: normalizePostalInternational(r.postalCode, country),
+    city: r.city,
+    street: r.street,
+    houseNumber: r.houseNumber,
+    apartmentNumber: r.apartmentNumber || "",
+    contactPerson: r.contactPerson || r.name,
+    contactPhone: r.contactPhone,
+    contactEmail: r.contactEmail,
   };
 }
-
 function defaultPiece() {
   return {
     type: 'PACKAGE',
@@ -361,6 +207,8 @@ export async function getInternationalParams() {
   const payload = { authData: buildAuth() };
   const [res] = await client.getInternationalParamsAsync(payload);
   const list = res?.getInternationalParamsResult?.params?.item || [];
+  console.log('getInternationalParams raw:', list);
+
   // нормалізуємо у зручний формат
   return list.map((it) => ({
     countryName: it?.countryName || null,
@@ -395,6 +243,7 @@ export async function resolveProductForCountry(
         _intlParamsCache.set(String(it.countryCode).toUpperCase(), it);
     }
   }
+
   const rec = _intlParamsCache.get(cc);
   // product з довідника (на скрінах це "EK" для DE — DHL PARCEL CONNECT)
   return rec?.product || fallback;
@@ -408,7 +257,7 @@ export async function getPostalCodeServices(args = {}) {
   const client = await getSoapClient();
   const payload = {
     authData: buildAuth(),
-    postCode: normalizePostcode(args.postCode),
+    postCode: normalizePostalInternational(args.postCode),
     pickupDate: args.pickupDate, // 'YYYY-MM-DD'
   };
   if (args.city) payload.city = trimLen(args.city, 35);
@@ -448,7 +297,8 @@ export async function createShipments({
   skipRestrictionCheck = false,
 } = {}) {
   const client = await getSoapClient();
-
+ client.on('request', (xml) => console.log('SOAP REQUEST >>>\n', xml));
+client.on('response', (xml) => console.log('SOAP RESPONSE <<<\n', xml));
   const finalPayment = {
     paymentMethod: 'BANK_TRANSFER',
     payerType: 'SHIPPER',
@@ -779,7 +629,46 @@ export async function getLabels(items = []) {
 
   return out;
 }
+export async function getPostalCodeServicesTest({
+  postCode,
+  pickupDate,
+  city,
+  street,
+  houseNumber,
+  apartmentNumber,
+} = {}) {
+  if (!postCode) throw new Error('postCode is required');
+  if (!pickupDate) throw new Error('pickupDate is required');
 
+  const client = await getSoapClient();
+
+  const payload = {
+    authData: buildAuth(),
+    postCode: normalizePostalSimple(postCode),
+    pickupDate, // 'YYYY-MM-DD'
+    city: city || undefined,
+    street: street || undefined,
+    houseNumber: houseNumber || undefined,
+    apartmentNumber: apartmentNumber || undefined,
+  };
+
+  const [res] = await client.getPostalCodeServicesAsync(payload);
+
+  const r =
+    res?.getPostalCodeServicesResult || res?.GetPostalCodeServicesResult || res;
+  // повертаємо як є + echo
+  return {
+    echo: {
+      postCode: payload.postCode,
+      pickupDate,
+      city,
+      street,
+      houseNumber,
+      apartmentNumber,
+    },
+    data: r || null,
+  };
+}
 /**
  * Трекінг/події по відправці.
  * Повертає: { shipmentId, receivedBy, events: [{date, description, location?, status?}] }
@@ -813,7 +702,7 @@ export async function getTrackAndTraceInfo(shipmentId) {
 /* корисні експорти */
 export const auth = buildAuth;
 export const _normalize = {
-  normalizePostcode,
+  
   clampHouseApt,
   mapAddress,
   mapReceiver,
