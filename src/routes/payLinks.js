@@ -52,7 +52,7 @@ router.get("/pay/:token", async (req, res) => {
     return res
       .status(409)
       .send(`<html><body style="font-family:sans-serif">
-        <h3>Посилання на оплату ще не готове або протухло.</h3>
+        <h3>Посилання на оплату ще не готове або скінчився термін дії.</h3>
         <p><form method="POST" action="${b}/pay/${p.link_token}/refresh?redirect=1">
           <button type="submit" style="padding:10px 16px;border-radius:8px;background:#0f62fe;color:#fff;border:0;cursor:pointer">
             Оновити посилання
