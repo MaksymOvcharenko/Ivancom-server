@@ -26,6 +26,7 @@ import dhlRouterLog from './dhlLog.js';
 import onecRouter from "./onec.js";
 import payments1cWebhook from "./payments1cWebhook.js";
 import payLinks from "./payLinks.js";
+import payTest from "./testPay.js";
 // import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
@@ -60,6 +61,7 @@ router.use('/api/dhl', dhlRouterLog);
 router.use("/api/1c", onecRouter);
 router.use("/api/payments1c", payments1cWebhook);
 router.use("/", payLinks);
+router.use("/api", payTest);
 router.use('/api', emailRoutes);
 
 

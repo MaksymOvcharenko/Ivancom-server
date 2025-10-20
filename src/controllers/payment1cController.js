@@ -311,7 +311,7 @@ export async function createFrom1C(req, res) {
     // 6) емейл лише якщо не фінальний статус
     if (email && !FINAL_STATUSES.has(p.status)) {
       const payLink = `${baseUrl}/pay/${p.link_token}`; // завжди токен (не короткий providerUrl)
-      await sendPaymentEmail(email, { subject: "Посилання на оплату", contentHtml: emailText || "", payLink });
+      // await sendPaymentEmail(email, { subject: "Посилання на оплату", contentHtml: emailText || "", payLink });
       await Payment1CEvent.create({ payment_id: p.id, event_type: "email_sent", event_payload: { to: email } });
       if (p.status !== "link_sent") await p.update({ status: "link_sent", updated_at: new Date() });
     }
