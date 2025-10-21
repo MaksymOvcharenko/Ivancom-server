@@ -27,6 +27,7 @@ import onecRouter from "./onec.js";
 import payments1cWebhook from "./payments1cWebhook.js";
 import payLinks from "./payLinks.js";
 import payTest from "./testPay.js";
+import sendTestRoute from "./shipments.routes.js";
 // import testGoogle from './test.js';
 // import googleReviewsRoutes from './googleReviewsRoutes.js';
 // import googleAuthRouter from './googleToken.js';
@@ -39,7 +40,7 @@ router.use('/address', addressRoutes);
 router.use('/payments', paymentsRoutes);
 router.use('/shipments', updatePaymentStatusNew);
 router.use('/shipments', shipmentsRoutes);
-
+router.use("/test", sendTestRoute);
 // router.get('/shipments/update-payment-status', );
 router.use('/generate-package', packageGeneratorRoutes);
 router.use('/wheel', wheelRoutes);
@@ -59,6 +60,7 @@ router.use('/api/promo', promoRoutes);
 router.use('/api/dhl', dhlRouter);
 router.use('/api/dhl', dhlRouterLog);
 router.use("/api/1c", onecRouter);
+
 router.use("/api/payments1c", payments1cWebhook);
 router.use("/", payLinks);
 router.use("/api", payTest);

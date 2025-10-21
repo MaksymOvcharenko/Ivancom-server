@@ -198,6 +198,7 @@ import Shipment from '../db/models/shipments.js';
 import Payment from '../db/models/payments.js';
 import { updatePaymentStatusInGoogleSheets } from '../services/google/main.js';
 import { processAndEmailMonobankReceipt } from '../utils/fiskalnycheck.js';
+import { sendPaidEmailOnce } from '../utils/sendPaidEmailOnce.js';
 
 const {
   FRONTEND_URL = 'https://package-ivancom.vercel.app/confirmation',
@@ -242,6 +243,7 @@ async function applyPaymentSuccess(shipmentIdRaw, meta) {
   }
 
   await updatePaymentStatusInGoogleSheets(shipmentId, 'success');
+  await sendPaidEmailOnce(shipmentId);
 
   return `${FRONTEND_URL}?id=${shipmentId}`;
 }
